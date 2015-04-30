@@ -1,4 +1,4 @@
-=== Octavius 2.0 Client ===
+=== Octavius ===
 Contributors: Octavius.rocks,edwardbock,benjamin.birkenhake,kroppenstedt
 Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
