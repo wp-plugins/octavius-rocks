@@ -4,7 +4,7 @@ Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0
 Tested up to: 4.2.1
-Stable tag: 1.0.1
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,13 +25,16 @@ The octavius service is made for live tracking and analysing how well your tease
 
 = Do I need to register somewhere to use this plugin? =
 
-Yes. Octavius Service will launch 2/2015 for public use.
+Yes. Octavius Service will launch 2/2015 for public beta use.
 
 == Screenshots ==
 
 1. Octavius Service
 
 == Changelog ==
+
+= 1.0.3 =
+* Miscalculation fixes
 
 = 1.0 =
 * Provides tracking js and admin button to analyse pages
