@@ -7,7 +7,7 @@
  * Plugin Name:       Octavius 2.0 Client
  * Plugin URI:        http://www.palasthotel.de
  * Description:       Tacking click paths
- * Version:           1.0.3
+ * Version:           1.1
  * Author:            PALASTHOTEL by Edward
  * Author URI:        http://www.palasthotel.de
  * License:           GPL-2.0+

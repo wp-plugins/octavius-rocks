@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.0.3';
+		$this->version = '1.1';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -97,15 +97,19 @@ class Octavius_Client {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Octavius_Client_Admin( $this->get_plugin_name(), $this->get_version() );
-
-		// TODO add numbers to posts
-		$this->loader->add_action('wp_head', $plugin_admin, 'render_js_vars');
+		
 		$this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'add_script');
+		$this->loader->add_filter('ph_aggregator_ignore', $plugin_admin, 'aggregator_ignore');
 
 		/**
 		 * registers all menu pages
 		 */
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'menu_pages' );
+
+		/**
+		 * dashboard widgets
+		 */
+		$this->loader->add_action('wp_dashboard_setup', $plugin_admin, 'dashboard_setup');
 
 		/**
 		 * admin bar button
