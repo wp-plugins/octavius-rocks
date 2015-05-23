@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.1';
+		$this->version = '1.1.1';
 
 		$this->load_dependencies();
 		$this->set_locale();

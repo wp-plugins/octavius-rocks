@@ -31,7 +31,6 @@
 			 * 
 			 */
 			socket.on("ready", function(data){
-				console.log("ready!");
 				// TODO: init all scripts that use OctaviusAdmin Socket connection
 				self.is_ready = true;
 			});
@@ -39,8 +38,8 @@
 			 * if we get disconnected from octavius
 			 */
 			socket.on('disconnect', function(info){
-				console.log("Connection lost");
-				console.log([info]);
+				console.error("Connection lost");
+				console.error([info]);
 				self.is_ready = false;
 			});
 			this.init_modules(octavius);
@@ -65,7 +64,6 @@
 	var times = 1;
 	function try_init(){
 		init_timeout = setTimeout(function(){
-			console.log("try init");
 			// if not available yet try another time
 			if(typeof Octavius == typeof undefined){
 				try_init();

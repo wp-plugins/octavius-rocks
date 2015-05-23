@@ -18,4 +18,5 @@
 		
 	</tbody>
 </table>
+<input id="octavius-limit" type="hidden" value="<?php echo $limit; ?>" />
 <p id="octavius-timestamp"></p>

@@ -1,11 +1,11 @@
 (function( $ ) {
 	'use strict';
-	console.log("bin ich hier?");
 
 	window.OctaviusDashboard = function(){
 		var $top_links = $("#octavius-top-links");
 		var $step = $("#octavius-top-links-step");
 		var $timestamp = $('#octavius-timestamp');
+		var $limit = $('#octavius-limit');
 
 		var self = this;
 		var socket = null;
@@ -17,7 +17,6 @@
 			this.get_top();
 			
 			socket.on('update_top', function(data){
-				console.log(data);
 				$top_links.empty();
 
 				for(var i = 0; i < data.result.length; i++){
@@ -50,7 +49,7 @@
 			clearInterval(top_interval);
 			top_interval = setTimeout(function(){
 				if(!oc.admincore.is_ready) self.get_top();
-				socket.emit("get_top",{step: $step.val()});
+				socket.emit("get_top",{step: $step.val(), limit: $limit.val() });
 			},1000);
 			
 		}

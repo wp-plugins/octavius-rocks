@@ -142,7 +142,7 @@ class Octavius_Client_Admin {
 		</script>
 		<?php
 		$options = $this->dashboardOptions();
-		
+		$limit = $options["number"];
 		wp_enqueue_script( 'octavius-socketio', plugin_dir_url( __FILE__ ) . 'js/socket.io-1.3.5.js', array(), '1.3.5', true );
 		wp_enqueue_script( 'octavius-admin-core', plugin_dir_url( __FILE__ ) . 'js/octavius-admin-core.js', array(), '1.0', true );
 		wp_enqueue_script( 'octavius-admin-dashboard', plugin_dir_url( __FILE__ ) . 'js/octavius-dashboard.js', array(), '1.0', true );
