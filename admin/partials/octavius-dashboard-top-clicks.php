@@ -10,7 +10,7 @@
 				<option value="day">24 Stunden</option>
 				<option value="week">7 Tage</option>
 				<option value="month">Monat</option>
-			</select></th>	
+			</select><div id="octavius-loading" class="spinner"></div></th>	
 		</tr>
 	</thead>
 
@@ -19,4 +19,5 @@
 	</tbody>
 </table>
 <input id="octavius-limit" type="hidden" value="<?php echo $limit; ?>" />
+<input id="edit-post-link-template" value="<?php echo admin_url(); ?>post.php?action=edit&amp;post=" type="hidden" />
 <p id="octavius-timestamp"></p>

@@ -46,15 +46,15 @@ class Octavius_Client_Public {
 		$port = get_option($port_id, '');
 
 		?>
-		<!--
-		<style type="text/css">#octavius-needed-pixel{display: none;}</style>
+		
+		<style type="text/css">#octavius-needed-pixel{height: 0px;}</style>
 		<?php 
 		$url = strtok($_SERVER["REQUEST_URI"],'?');
 		$pid = get_the_ID();
-		$service_url = "<?php echo $server; ?>:<?php echo $port; ?>/hit/oc-found/client/".$pid."?url=".$url;
+		$service_url = $server.":".$port."/hit/oc-found/".$api_key."/".$pid."?url=".$url;
 		?>
-		<img id="octavius-needed-pixel" src="<?php //echo $service_url; ?>" />
-		-->
+		<!--<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />-->
+		
 		<?php
 
 		?>

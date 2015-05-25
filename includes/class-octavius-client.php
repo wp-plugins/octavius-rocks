@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.1.1';
+		$this->version = '1.1.2';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -70,6 +70,11 @@ class Octavius_Client {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-octavius-client-admin.php';
 
 		/**
+		 * The class responsible for defining all ajax actions that occur in the admin area.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-octavius-ajax.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
@@ -97,6 +102,7 @@ class Octavius_Client {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Octavius_Client_Admin( $this->get_plugin_name(), $this->get_version() );
+		$ajax = new Octavius_Ajax( $this->get_plugin_name(), $this->get_version() );
 		
 		$this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'add_script');
 		$this->loader->add_filter('ph_aggregator_ignore', $plugin_admin, 'aggregator_ignore');
@@ -110,6 +116,11 @@ class Octavius_Client {
 		 * dashboard widgets
 		 */
 		$this->loader->add_action('wp_dashboard_setup', $plugin_admin, 'dashboard_setup');
+
+		/**
+		 * post title ajax call
+		 */
+		$this->loader->add_action('wp_ajax_get_posts_titles', $ajax, 'get_posts_titles');
 
 		/**
 		 * admin bar button
