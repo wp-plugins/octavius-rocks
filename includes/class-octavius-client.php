@@ -37,12 +37,13 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.1.2';
+		$this->version = '1.2';
 
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+		$this->define_grid_hooks();
 
 	}
 
@@ -79,6 +80,11 @@ class Octavius_Client {
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-octavius-client-public.php';
+
+		/**
+		 * The class responsible for defining all actions for grid
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'grid/class-grid-controller.php';
 
 		$this->loader = new Octavius_Client_Loader();
 
@@ -138,6 +144,24 @@ class Octavius_Client {
 		$plugin_public = new Octavius_Client_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_footer', $plugin_public, 'render_script', 100 );
+
+		/**
+		 * renders the page title for the given url
+		 */
+		$this->loader->add_action('wp', $plugin_public, 'show_url_info');
+
+	}
+
+	/**
+	 * register all grid hooks
+	 * 
+	 */
+	private function define_grid_hooks() {
+
+		$plugin_grid = new Octavius_Grid_Controller( $this->get_plugin_name(), $this->get_version() );
+
+		$this->loader->add_action( 'grid_load_classes', $plugin_grid, 'load_classes');
+		$this->loader->add_filter('grid_templates_paths', $plugin_grid, 'templates_paths');
 
 	}
 

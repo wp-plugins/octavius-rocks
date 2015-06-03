@@ -138,5 +138,32 @@ class Octavius_Client_Public {
         }
         return '';
 	}
+	/**
+	 * show url info
+	 */
+	public function show_url_info(){		
+		if(isset($_GET['octavius']) and $_GET['octavius']=="info"){
+			$info = (object) array();
+			if( is_single() || is_page() ){
+				$info->title = get_the_title();
+				$info->ID = get_the_ID();
+			} else if( is_category() || is_tag() ) {
+				if(is_category()){
+					$info->title = "Category: ";
+				} else if(is_tag()){
+					$info->title = "Tag: ";
+				}
+				ob_start();
+				wp_title();
+				$info->title .= ob_get_contents();
+				ob_end_clean();
+			} else if( is_home() || is_front_page() ){
+	        	$info->title = 'Home';
+	        }
+			wp_send_json($info);		
+			die;		
+			
+		}
+	}
 
 }

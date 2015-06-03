@@ -60,11 +60,25 @@ class Octavius_Ajax {
 				$title = get_the_title($contents[$i]);
 				$result[] = array("content_id"=>$contents[$i], "title" => $title);
 			} else if($type == "path"){
-				$row = $wpdb->get_row('SELECT ID, post_title FROM '.$wpdb->prefix.'posts WHERE guid = "'.$site_url.$contents[$i].'"');
-				if($row == null){
+				$args['headers'] = array(
+					'Authorization' => 'Basic ' . base64_encode( $_SERVER['PHP_AUTH_USER'] . ':' . $_SERVER['PHP_AUTH_PW'] ),
+				);
+				$args['timeout'] = 20;
+				$response = wp_remote_request( $site_url.$contents[$i]."?octavius=info", $args );
+
+				if(is_wp_error($response)){
 					$result[] = array("content_id"=>null, "title" => "", "path"=>$contents[$i], "guid" => $site_url.$contents[$i]);
 				} else {
-					$result[] = array("content_id"=> $row->ID, "title" => $row->post_title, "path" => $contents[$i]);
+					$res = json_decode($response["body"]);
+					$title = "";
+					if(isset($res->title)){
+						$title = $res->title;
+					}
+					$id = null;
+					if(isset($res->ID)){
+						$id = $res->ID;
+					}
+					$result[] = array("content_id"=>$id, "title" => $title, "path"=>$contents[$i], "guid" => $site_url.$contents[$i]);
 				}
 			}
 			

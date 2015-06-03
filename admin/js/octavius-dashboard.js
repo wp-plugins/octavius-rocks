@@ -22,7 +22,7 @@
 
 				for(var i = 0; i < data.result.length; i++){
 					var _item = data.result[i];
-					if( !isNaN(_item.content_id) && typeof titles_to_ids[_item.content_id] == typeof undefined ){
+					if( !isNaN(_item.content_id) && _item.content_id != "" && typeof titles_to_ids[_item.content_id] == typeof undefined ){
 						titles_to_ids[_item.content_id] = null;
 					} else if( typeof titles_to_path[_item.content_url] == typeof undefined ) {
 						titles_to_path[_item.content_url] = null;
@@ -178,7 +178,7 @@
 						}
 						self.update_titles_path();
 						self.display_titles();
-					}
+					},
 				});
 			}, 1000);
 		}
@@ -195,7 +195,9 @@
 					element.href = edit_post_link+cid;
 				} else if(typeof titles_to_path[path] !== typeof undefined && titles_to_path[path] != null && titles_to_path[path] !== false){
 					element.innerHTML = titles_to_path[path].title;
-					element.href = edit_post_link+ titles_to_path[path].content_id;
+					if(titles_to_path[path].content_id != null){
+						element.href = edit_post_link+ titles_to_path[path].content_id;
+					}
 				}
 			});
 		}
