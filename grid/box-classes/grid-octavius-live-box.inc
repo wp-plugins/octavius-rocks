@@ -8,6 +8,7 @@ class grid_octavius_live_box extends grid_list_box
 		$this->content->limit = 5;
 		$this->content->offset = 0;
 		$this->content->category = "";
+		$this->content->post_type = "any";
 	}
 
 	public function type()
@@ -71,7 +72,7 @@ class grid_octavius_live_box extends grid_list_box
 			  'post__in'      => $ids,
 			  'post_status'   => 'publish',
 			  'orderby'       => 'post__in',
-			  'post_type'     => 'any',
+			  'post_type'     => $this->content->post_type,
 			);
 			if(isset($this->content->category) && $this->content->category != ""){
 				$query_args["cat"] = $this->content->category;
@@ -113,6 +114,26 @@ class grid_octavius_live_box extends grid_list_box
 	}
 
 	public function contentStructure(){
+		/**
+		 * post types
+		 */
+		$post_types = get_post_types(array(
+			'public'=>true,
+		));
+		$ptypes = array();
+		$ptypes[] = array(
+			"key" => "any",
+			"text" => t("All"),
+		);
+		foreach ($post_types as $type) {
+			$ptypes[] = array(
+				"key" => $type,
+				"text" => $type,
+			);
+		}
+		/**
+		 * categories
+		 */
 		$args = array(
 			'orderby' => 'name',
 			'order' => 'ASC'
@@ -130,6 +151,12 @@ class grid_octavius_live_box extends grid_list_box
 			);
 		}
 		$cs = array();
+		$cs[] = array(
+			'key' => 'post_type',
+			'label' => t('Post type'),
+			'type' => 'select',
+			'selections'=>$ptypes,
+		);
 		$cs[] = array(
 			"key" => "limit",
 			"label" => t("Limit"),

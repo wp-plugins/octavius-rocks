@@ -50,9 +50,18 @@ class Octavius_Client_Public {
 		<style type="text/css">#octavius-needed-pixel{height: 0px;}</style>
 		<?php 
 		$url = strtok($_SERVER["REQUEST_URI"],'?');
-		$pid = $this->get_content_id();
-		if($pid == '') $pid = 0;
-		$service_url = $server.":".$port."/hit/oc-found/".$api_key."/".$pid."?url=".$url;
+
+		$type = $this->get_pagetype();
+		$pid = '';
+		if( strpos($type, "archive-") !== 0
+			&& strpos($type, "category") !== 0
+			&& strpos($type, "tag") !== 0
+			&& strpos($type, "tax") !== 0){
+			$pid = get_the_ID();
+		}
+		
+		$service_url = $server.":".$port."/hit/oc-found/".$api_key."?url=".$url;
+		$service_url.= "&content_id=".$pid;
 		$service_url.= "&pagetype=".$this->get_pagetype();
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
@@ -83,7 +92,7 @@ class Octavius_Client_Public {
 	 * return pagetype of page
 	 */
 	private function get_pagetype(){
-		global $wp_query, $wpdb;
+		global $wp_query, $wpdb, $post;
         if ( is_single() ) {
         	if ( isset( $post->post_type ) ) {
         		return $post->post_type;
