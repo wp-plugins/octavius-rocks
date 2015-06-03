@@ -50,14 +50,12 @@ class Octavius_Client_Public {
 		<style type="text/css">#octavius-needed-pixel{height: 0px;}</style>
 		<?php 
 		$url = strtok($_SERVER["REQUEST_URI"],'?');
-		$pid = get_the_ID();
+		$pid = $this->get_content_id();
+		if($pid == '') $pid = 0;
 		$service_url = $server.":".$port."/hit/oc-found/".$api_key."/".$pid."?url=".$url;
+		$service_url.= "&pagetype=".$this->get_pagetype();
 		?>
-		<!--<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />-->
-		
-		<?php
-
-		?>
+		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
 		<script type="text/javascript">
 		window.OctaviusInit = function(octavius){
 			octavius.config.service = "<?php echo $server; ?>:<?php echo $port; ?>";
@@ -146,7 +144,7 @@ class Octavius_Client_Public {
 			$info = (object) array();
 			if( is_single() || is_page() ){
 				$info->title = get_the_title();
-				$info->ID = get_the_ID();
+				$info->ID = $this->get_content_id();
 			} else if( is_category() || is_tag() ) {
 				if(is_category()){
 					$info->title = "Category: ";
@@ -160,6 +158,7 @@ class Octavius_Client_Public {
 			} else if( is_home() || is_front_page() ){
 	        	$info->title = 'Home';
 	        }
+
 			wp_send_json($info);		
 			die;		
 			
