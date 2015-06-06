@@ -1,0 +1,67 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+
+
+#wp-admin-bar-octavius
+{
+	cursor: pointer;
+}
+
+.octavius-evaluate-tooltip{
+	position: relative;
+	width: 0px;
+	height: 0px;
+	display: inline;
+}
+
+.octavius-evaluate-tooltip-content{
+	position: absolute;
+	z-index: 123456789;
+	left: -10px;
+	top: -10px;
+	box-sizing: border-box;
+	padding: 4px 12px;
+	border-radius: 12px;
+	
+	background-color: rgba( 52, 90, 110, 0.3 );
+	color: white;
+	text-align: center;
+	font-size: 12px;
+	line-height: 12px;
+	font-weight: normal;
+	font-family: monospace;
+	-webkit-transition: all 0.3s ease-out;
+          transition: all 0.3s ease-out;
+}
+
+*:hover > .octavius-evaluate-tooltip .octavius-evaluate-tooltip-content,
+.octavius-evaluate-tooltip-content:hover{
+	background-color: rgba( 52, 90, 110, 1 );
+}
+
+
+.highlighted {
+	-webkit-animation: highlighted-animation 2s;
+			animation: highlighted-animation 2s;
+}
+
+
+
+@-webkit-keyframes highlighted-animation {
+  0%   { background-color: rgba( 52, 90, 110, 1 ); }
+  100% { background-color: rgba( 52, 90, 110, 0.3 ); }
+}
+@-moz-keyframes highlighted-animation {
+  0%   { background-color: rgba( 52, 90, 110, 1 ); }
+  100% { background-color: rgba( 52, 90, 110, 0.3 ); }
+}
+@-o-keyframes highlighted-animation {
+  0%   { background-color: rgba( 52, 90, 110, 1 ); }
+  100% { background-color: rgba( 52, 90, 110, 0.3 ); }
+}
+@keyframes highlighted-animation {
+  0%   { background-color: rgba( 52, 90, 110, 1 ); }
+  100% { background-color: rgba( 52, 90, 110, 0.3 ); }
+}
