@@ -1,0 +1,37 @@
+/**
+ * variant results styles
+ */
+.octavius-rocks-ab-results{
+	position: relative;
+	height: 50px;
+}
+.octavius-rocks-ab-results .octavius-rocks-ab-result{
+	position: absolute;
+	top:0px;
+	bottom: 0px;
+	opacity: 0.3;
+	background-color: black;
+}
+/**
+ * variants styles
+ */
+.octavius-rocks-variant{
+	background: #f5f5f5;
+	border: 1px solid #DFDFDF;
+}
+.octavius-rocks-variant label {
+	background-color:#F1F1F1;
+	display: block;
+	padding: 8px 6px;
+	font-weight: bold;
+}
+.octavius-rocks-variant .octavius-rocks-contents{
+	padding: 5px 6px;
+}
+.octavius-rocks-variant + .octavius-rocks-variant{
+	margin-top: 15px;
+}
+.octavius-rocks-variant input[type=text],
+.octavius-rocks-variant textarea{
+	width: 100%;
+}
