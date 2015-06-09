@@ -47,7 +47,7 @@ class Octavius_Client_Public {
 
 		?>
 		
-		<style type="text/css">#octavius-needed-pixel{height: 0px;}</style>
+		<style type="text/css">#octavius-needed-pixel{height: 0px; width:0px; visibility: none;}</style>
 		<?php 
 		$url = strtok($_SERVER["REQUEST_URI"],'?');
 
@@ -172,6 +172,15 @@ class Octavius_Client_Public {
 			die;		
 			
 		}
+	}
+	/**
+	 * add variants to post object for ab testing
+	 */
+	public function add_variants_to_post($post) {
+		/**
+		 * add to post object for easy access
+		 */
+		$post->octavius_variants = $this->variants->get_variants_values($post->ID);
 	}
 
 }

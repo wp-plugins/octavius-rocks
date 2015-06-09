@@ -4,7 +4,6 @@
 	/**
 	 * octavius to websocket
 	 */
-
 	var OctaviusAdmin  =  function(){
 		/**
 		 * quick access references

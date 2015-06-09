@@ -117,10 +117,11 @@
 							for (var i = 0; i < data.result.length; i++) {
 								var cid = data.result[i].content_id;
 								var title = data.result[i].title;
+								titles_to_ids[cid] = {};
 								if(title != ""){
-									titles_to_ids[cid] = title;
+									titles_to_ids[cid].title = title;
 								} else {
-									titles_to_ids[cid] = false;
+									titles_to_ids[cid].title = false;
 								}					
 							};
 						}
@@ -169,10 +170,11 @@
 							for (var i = 0; i < data.result.length; i++) {
 								var path = data.result[i].path;
 								var title = data.result[i].title;
+								titles_to_path[path] = {};
 								if(title != ""){
 									titles_to_path[path] = data.result[i];
 								} else {
-									titles_to_path[path] = false;
+									titles_to_path[path].title = false;
 								}					
 							};
 						}
@@ -190,10 +192,22 @@
 			$top_links.find("a").each(function(index, element){
 				var cid = element.getAttribute("data-content_id");
 				var path = element.getAttribute("href");
-				if(typeof titles_to_ids[cid] === typeof ""){
-					element.innerHTML = titles_to_ids[cid];
+				if(typeof titles_to_ids[cid] !== typeof undefined 
+					&& titles_to_ids[cid] != null
+					&& typeof titles_to_ids[cid].title === typeof ""){
+					if(typeof titles_to_ids[cid].original === typeof undefined){
+						titles_to_ids[cid].original = element.innerHTML;
+					}
+					element.setAttribute("title", titles_to_ids[cid].original );
+					element.innerHTML = titles_to_ids[cid].title;
 					element.href = edit_post_link+cid;
-				} else if(typeof titles_to_path[path] !== typeof undefined && titles_to_path[path] != null && titles_to_path[path] !== false){
+				} else if(typeof titles_to_path[path] !== typeof undefined 
+					&& titles_to_path[path] != null 
+					&& titles_to_path[path].title !== false){
+					if(typeof titles_to_path[path].original === typeof undefined){
+						titles_to_path[path].original = element.innerHTML;
+					}
+					element.setAttribute("title", titles_to_path[path].original );
 					element.innerHTML = titles_to_path[path].title;
 					if(titles_to_path[path].content_id != null){
 						element.href = edit_post_link+ titles_to_path[path].content_id;

@@ -34,32 +34,6 @@ class Octavius_Client_Admin {
 		$this->version = $version;
 
 	}
-	public function menu_pages(){
-		add_submenu_page( 'options-general.php', 'Octavius 2.0', 'Octavius 2.0', 'manage_options', $this->plugin_name, array($this, "render_octavius_settings"));
-	}
-
-	/**
-	 *  renders settings page for octavius
-	 */
-	public function render_octavius_settings()
-	{
-
-		$api_key_id = "ph_octavius_api_key";
-		$server_id = "ph_octavius_server";
-		$port_id = "ph_octavius_port";
-		
-		if( isset($_POST[$api_key_id]) && isset($_POST[$server_id]) && isset($_POST[$port_id])){
-			update_option($api_key_id, sanitize_text_field($_POST[$api_key_id]) );
-			update_option($server_id, sanitize_text_field($_POST[$server_id]) );
-			update_option($port_id, sanitize_text_field($_POST[$port_id]) );
-		}
-
-		$api_key = get_option($api_key_id, '');
-		$server = get_option($server_id, '');
-		$port = get_option($port_id, '');
-
-		require dirname(__FILE__)."/partials/octavius-client-admin-settings-display.php";
-	}
 	
 	/**
 	 * add evaluating script
@@ -116,8 +90,7 @@ class Octavius_Client_Admin {
 			return get_option('octavius_dashboard_widget_options', array("number" => 5) );
 		}
 	}
-	public function render_top_clicks(){
-
+	private function render_octavius_js_base(){
 		$api_key_id = "ph_octavius_api_key";
 		$server_id = "ph_octavius_server";
 		$port_id = "ph_octavius_port";
@@ -141,6 +114,11 @@ class Octavius_Client_Admin {
 		}(document));
 		</script>
 		<?php
+	}
+	public function render_top_clicks(){
+
+		$this->render_octavius_js_base();
+
 		$options = $this->dashboardOptions();
 		$limit = $options["number"];
 		wp_enqueue_script( 'octavius-socketio', plugin_dir_url( __FILE__ ) . 'js/socket.io-1.3.5.js', array(), '1.3.5', true );
@@ -166,6 +144,53 @@ class Octavius_Client_Admin {
 
 		echo '<p><label for="octavius-top-number">' . __('Number of top contents to show:'). '</label>';
 		echo '<input id="octavius-top-number" name="widget-octavius-top-clicks" type="text" value="' . $widget_options["number"] . '" size="3" /></p>';
+	}
+	/**
+	 * meta boxes
+	 */
+	public function add_meta_box_ab(){
+		wp_enqueue_style( 'octavius-meta-box-ab-css', plugin_dir_url( __FILE__ ) . 'css/octavius-meta-box-ab.css', array(), '1.0', 'all' );
+		wp_enqueue_script( 'octavius-socketio', plugin_dir_url( __FILE__ ) . 'js/socket.io-1.3.5.js', array(), '1.3.5', true );
+		wp_enqueue_script( 'octavius-core', plugin_dir_url( __FILE__ ) . 'js/octavius-admin-core.js', array(), '1.0', true );
+		wp_enqueue_script( 'octavius-meta-box-ab-js', plugin_dir_url( __FILE__ ) . 'js/octavius-meta-box-ab.js', array(), '1.0', true );
+		add_meta_box(
+			'octavius_rocks_ab_results',
+			__( 'A/B Results', $this->plugin_name ),
+			array($this, 'render_meta_box_ab_results')
+		);
+		add_meta_box(
+			'octavius_rocks_ab_variants',
+			__( 'A/B Variants', $this->plugin_name ),
+			array($this, 'render_meta_box_ab_variants')
+		);
+	}
+	public function render_meta_box_ab_variants($post){
+		$variants = $this->variants->get();
+		include dirname(__FILE__)."/partials/octavius-meta-box-ab.php";
+	}
+	public function save_meta_box_ab($post_id){
+		// Checks save status
+	    $is_autosave = wp_is_post_autosave( $post_id );
+	    $is_revision = wp_is_post_revision( $post_id );
+	 
+	    // Exits script depending on save status
+	    if ( $is_autosave || $is_revision ) {
+	        return;
+	    }
+
+		if(isset($_POST["octavius_ab"]) && is_array($_POST["octavius_ab"]) ){
+			$abs = $_POST["octavius_ab"];
+			foreach ($abs as $slug => $values) {
+				$this->variants->save_post_metas($post_id, $slug, $values["title"], $values["attachment_id"], $values["excerpt"]);
+			}
+		}
+	}
+	/**
+	 * meta box ab results
+	 */
+	public function render_meta_box_ab_results($post){
+		$this->render_octavius_js_base();
+		include dirname(__FILE__)."/partials/octavius-meta-box-ab-results.php";
 	}
 
 }

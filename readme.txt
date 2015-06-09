@@ -1,10 +1,10 @@
-=== Octavius 2.0 Client ===
+=== Octavius Rocks ===
 Contributors: Octavius.rocks,edwardbock,benjamin.birkenhake,kroppenstedt
 Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0
 Tested up to: 4.2.2
-Stable tag: 1.2.1
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Works with octavius analytics service
 
 == Description ==
 
-The octavius service is made for live tracking and analysing how well your teasers and links are klicked. It's optimized to work with our [Grid](http://wordpress.org/plugins/grid "Grid Landingpage Editor") plugin. 
+The octavius service is made for live tracking and analysing how well your teasers and links are klicked. It's optimized to work with our [Grid](http://wordpress.org/plugins/grid "Grid Landingpage Editor") plugin.
 
 == Installation ==
 
@@ -32,6 +32,13 @@ Yes. You can get your beta key at www.octavius.rocks
 1. Octavius Service
 
 == Changelog ==
+
+= 1.2.4 =
+* A/B Testing
+* Tracking pixel display fix
+
+= 1.2.1 =
+* Dashboard original tracked url as title attribute
 
 = 1.2.1 =
 * Pageviews tracking

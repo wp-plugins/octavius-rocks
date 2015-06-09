@@ -4,10 +4,10 @@
  *
  *
  * @wordpress-plugin
- * Plugin Name:       Octavius 2.0 Client
+ * Plugin Name:       Octavius Rocks
  * Plugin URI:        http://www.palasthotel.de
  * Description:       Tacking click paths
- * Version:           1.2.1
+ * Version:           1.2.4
  * Author:            PALASTHOTEL by Edward
  * Author URI:        http://www.palasthotel.de
  * License:           GPL-2.0+
@@ -65,6 +65,7 @@ function octavius_client_data_builder($assoc_array){
 	if(is_user_logged_in() && is_admin()){
 		$datas[] = "data-evaluate-octavius='true'";
 	}
+	$assoc_array = apply_filters('octavius_rocks_datas', $assoc_array);
 	foreach ($assoc_array as $key => $value) {
 		$datas[] = "data-octavius-".$key."='".$value."'";
 	}

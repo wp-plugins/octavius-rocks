@@ -37,10 +37,11 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.2.1';
+		$this->version = '1.2.4';
 
 		$this->load_dependencies();
 		$this->set_locale();
+		$this->define_settings_hooks();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 		$this->define_grid_hooks();
@@ -86,6 +87,18 @@ class Octavius_Client {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'grid/class-grid-controller.php';
 
+		/**
+		 * The settings class
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-octavius-client-settings.php';
+
+		/**
+		 * variants store
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-octavius-rocks-ab-variants-store.php';
+		$this->variants = new Octavius_Rocks_Ab_Variants_Store();
+
+
 		$this->loader = new Octavius_Client_Loader();
 
 	}
@@ -110,13 +123,14 @@ class Octavius_Client {
 		$plugin_admin = new Octavius_Client_Admin( $this->get_plugin_name(), $this->get_version() );
 		$ajax = new Octavius_Ajax( $this->get_plugin_name(), $this->get_version() );
 		
-		$this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'add_script');
-		$this->loader->add_filter('ph_aggregator_ignore', $plugin_admin, 'aggregator_ignore');
-
 		/**
-		 * registers all menu pages
+		 * add scripts
 		 */
-		$this->loader->add_action( 'admin_menu', $plugin_admin, 'menu_pages' );
+		$this->loader->add_action('wp_enqueue_scripts', $plugin_admin, 'add_script');
+		/**
+		 * dont aggregate scripts
+		 */
+		$this->loader->add_filter('ph_aggregator_ignore', $plugin_admin, 'aggregator_ignore');
 
 		/**
 		 * dashboard widgets
@@ -132,6 +146,30 @@ class Octavius_Client {
 		 * admin bar button
 		 */
 		$this->loader->add_action( 'admin_bar_menu', $plugin_admin, 'add_admin_bar_button', 999 );
+
+		/**
+		 * if there is an alternate teaser variante render meta box
+		 */
+		if(count($this->variants->get()) > 0){
+			$plugin_admin->variants = $this->variants;
+			$this->loader->add_action('add_meta_boxes', $plugin_admin, 'add_meta_box_ab');
+			$this->loader->add_action('save_post', $plugin_admin, 'save_meta_box_ab');
+		}
+
+	}
+
+	/**
+	 * Register all of the hooks related to settings menu
+	 */
+	private function define_settings_hooks() {
+
+		$plugin_settings = new Octavius_Client_Settings( $this->get_plugin_name(), $this->get_version() );
+		$plugin_settings->variants = $this->variants;
+
+		/**
+		 * registers all menu pages
+		 */
+		$this->loader->add_action( 'admin_menu', $plugin_settings, 'menu_pages' );	
 
 	}
 
@@ -149,6 +187,12 @@ class Octavius_Client {
 		 * renders the page title for the given url
 		 */
 		$this->loader->add_action('wp', $plugin_public, 'show_url_info');
+
+		/**
+		 * add variants to post object
+		 */
+		$plugin_public->variants = $this->variants;
+		$this->loader->add_action( 'the_post', $plugin_public, 'add_variants_to_post' );
 
 	}
 

@@ -10,8 +10,7 @@
 ?>
 
 <div class="wrap">
-	<h2>Octavius 2.0 Settings</h2>
-	<form method="post" action="<?php echo $_SERVER["PHP_SELF"]."?page=".$this->plugin_name; ?>">
+	<form method="post" action="<?php echo $_SERVER["PHP_SELF"]; ?>?page=octavius-rocks&amp;tab=server">
 
 		<table class="form-table">
 			<tr>
