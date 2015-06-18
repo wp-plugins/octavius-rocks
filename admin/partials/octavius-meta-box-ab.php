@@ -15,8 +15,7 @@ foreach ($variants as $slug => $name) {
 
             <input type="hidden" class="octavius-ab-image-id" name="octavius_ab[<?php echo $slug; ?>][attachment_id]" 
             value="<?php echo $values->attachment_id; ?>" />
-
-            <?php echo wp_get_attachment_image($values->attachment_id); ?>
+            <img class="octavius_ab_image_preview" src="<?php echo wp_get_attachment_thumb_url($values->attachment_id); ?>" />
             
             <p><input type="button" class="octavius-ab-image button" value="Image" size="25" /></p>
 

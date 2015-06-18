@@ -2,15 +2,37 @@
  * variant results styles
  */
 .octavius-rocks-ab-results{
+	margin-top: 50px;
 	position: relative;
 	height: 50px;
 }
-.octavius-rocks-ab-results .octavius-rocks-ab-result{
+.octavius-rocks-ab-result{
 	position: absolute;
 	top:0px;
 	bottom: 0px;
-	opacity: 0.3;
-	background-color: black;
+	background-color: #82CC09;
+	opacity: 0.8;
+	transition: all 0.3s;
+}
+.octavius-rocks-ab-result:hover{
+	opacity: 1;
+}
+.octavius-rocks-ab-result:nth-child(n+2){
+	background-color: #4766B2;
+}
+.octavius-rocks-ab-result:nth-child(n+3){
+	background-color: #FF613F;
+}
+.octavius-rocks-ab-result:nth-child(n+4){
+	background-color: #F5EF01;
+}
+.octavius-rocks-ab-result-values{
+	position: absolute;
+	top: -40px;
+	left: 50%;
+	margin-left: -30px;
+	color: black;
+	text-align: center;
 }
 /**
  * variants styles

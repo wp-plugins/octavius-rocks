@@ -108,10 +108,15 @@ class Octavius_Client_Settings {
 				$values[$slug] = $name;
 			}
 			$this->variants->save($values);
+			/**
+			 * update ab settings
+			 */
+			update_option('octavius_rocks_ab_min_hits', intval($_POST["octavius_rocks_ab_min_hits"]));
 		}
 		/**
 		 * render settings page
 		 */
+		$min_hits = get_option('octavius_rocks_ab_min_hits', 10);
 		$all = $this->variants->get();
 		require dirname(__FILE__)."/partials/octavius-settings-ab.php";
 	}

@@ -25,6 +25,11 @@ class Octavius_Client_Admin {
 	private $version;
 
 	/**
+	 * flag if js base was rendered
+	 */
+	private $rendered_js_base;
+
+	/**
 	 * Initialize the class and set its properties.
 	 *
 	 */
@@ -32,6 +37,7 @@ class Octavius_Client_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->rendered_js_base = false;
 
 	}
 	
@@ -81,16 +87,25 @@ class Octavius_Client_Admin {
 			array($this, 'render_top_clicks'),	// Display function
 			array($this, 'control_top_clicks') 		// Controll Function
 		);
+
+		wp_add_dashboard_widget(
+			'octavius_ab_results',
+			'A/B Results',
+			array($this, 'render_ab_results')
+		);
 	}
 	private function dashboardOptions($options = null){
 		if($options != null){
-			var_dump("SAVE");
 			return update_option('octavius_dashboard_widget_options', $options);
 		} else {
 			return get_option('octavius_dashboard_widget_options', array("number" => 5) );
 		}
 	}
 	private function render_octavius_js_base(){
+
+		if($this->rendered_js_base) return;
+		$this->rendered_js_base = true;
+
 		$api_key_id = "ph_octavius_api_key";
 		$server_id = "ph_octavius_server";
 		$port_id = "ph_octavius_port";
@@ -115,8 +130,10 @@ class Octavius_Client_Admin {
 		</script>
 		<?php
 	}
+	/**
+	 * dashboard top clicks
+	 */
 	public function render_top_clicks(){
-
 		$this->render_octavius_js_base();
 
 		$options = $this->dashboardOptions();
@@ -144,6 +161,15 @@ class Octavius_Client_Admin {
 
 		echo '<p><label for="octavius-top-number">' . __('Number of top contents to show:'). '</label>';
 		echo '<input id="octavius-top-number" name="widget-octavius-top-clicks" type="text" value="' . $widget_options["number"] . '" size="3" /></p>';
+	}
+	/**
+	 * dashboard ab results
+	 */
+	public function render_ab_results(){
+		$this->render_octavius_js_base();
+
+		include dirname(__FILE__)."/partials/octavius-dashboard-ab.php";
+
 	}
 	/**
 	 * meta boxes

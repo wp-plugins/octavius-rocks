@@ -57,12 +57,12 @@ class Octavius_Client_Public {
 			&& strpos($type, "category") !== 0
 			&& strpos($type, "tag") !== 0
 			&& strpos($type, "tax") !== 0){
-			$pid = get_the_ID();
+			$pid = $this->get_content_id();
 		}
 		
 		$service_url = $server.":".$port."/hit/oc-found/".$api_key."?url=".$url;
 		$service_url.= "&content_id=".$pid;
-		$service_url.= "&pagetype=".$this->get_pagetype();
+		$service_url.= "&pagetype=".$type;
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
 		<script type="text/javascript">
