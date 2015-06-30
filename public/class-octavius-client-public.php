@@ -24,7 +24,7 @@ class Octavius_Client_Public {
 
 	/**
 	 * Initialize the class and set its properties.
-	 * 
+	 *
 	 */
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
@@ -33,7 +33,7 @@ class Octavius_Client_Public {
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
-	 * 
+	 *
 	 */
 	public function render_script() {
 
@@ -46,9 +46,19 @@ class Octavius_Client_Public {
 		$port = get_option($port_id, '');
 
 		?>
-		
-		<style type="text/css">#octavius-needed-pixel{height: 0px; width:0px; visibility: none;}</style>
-		<?php 
+
+		<style type="text/css">
+		#octavius-needed-pixel {
+			height: 0px;
+			width: 0px;
+			overflow: hidden;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			z-index: -10;
+		}
+		</style>
+		<?php
 		$url = strtok($_SERVER["REQUEST_URI"],'?');
 
 		$type = $this->get_pagetype();
@@ -59,10 +69,16 @@ class Octavius_Client_Public {
 			&& strpos($type, "tax") !== 0){
 			$pid = $this->get_content_id();
 		}
-		
+
 		$service_url = $server.":".$port."/hit/oc-found/".$api_key."?url=".$url;
 		$service_url.= "&content_id=".$pid;
 		$service_url.= "&pagetype=".$type;
+		$service_url.= "&content_type=".$type;
+
+		if(isset($_GET["oc-variant"]) && $_GET["oc-variant"] != ""){
+			$service_url.="&variant=".sanitize_text_field($_GET["oc-variant"]);
+		}
+
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
 		<script type="text/javascript">
@@ -121,7 +137,7 @@ class Octavius_Client_Public {
 	}
 	/**
 	 * return id of page
-	 * 
+	 *
 	 */
 	private function get_content_id(){
 		global $wp_query;
@@ -148,7 +164,8 @@ class Octavius_Client_Public {
 	/**
 	 * show url info
 	 */
-	public function show_url_info(){		
+	public function show_url_info(){
+		global $wp_query;
 		if(isset($_GET['octavius']) and $_GET['octavius']=="info"){
 			$info = (object) array();
 			if( is_single() || is_page() ){
@@ -165,12 +182,15 @@ class Octavius_Client_Public {
 				$info->title .= ob_get_contents();
 				ob_end_clean();
 			} else if( is_home() || is_front_page() ){
-	        	$info->title = 'Home';
+	        	ob_start();
+				wp_title();
+				$info->title .= ob_get_contents();
+				ob_end_clean();
 	        }
 
-			wp_send_json($info);		
-			die;		
-			
+			wp_send_json($info);
+			die;
+
 		}
 	}
 	/**

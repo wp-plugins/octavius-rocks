@@ -60,7 +60,8 @@ jQuery(document).ready(function($){
                 setTimeout(this.get_variants.bind(this), 100);
                 return;
             }
-            socket.emit("get_variants_hits", {content_id: post_id, event_type: "click" });
+            // socket.emit("get_variants_hits", {content_id: post_id, event_type: "click" });
+            socket.emit("get_variants_hits", {content_id: post_id});
         }
         this.update_variants_hits =  function(data){
             var wrapper_width = $wrapper.outerWidth(true);
