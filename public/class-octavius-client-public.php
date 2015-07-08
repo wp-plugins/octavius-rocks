@@ -75,8 +75,22 @@ class Octavius_Client_Public {
 		$service_url.= "&pagetype=".$type;
 		$service_url.= "&content_type=".$type;
 
+		/**
+		 * look for variant tracking
+		 */
 		if(isset($_GET["oc-variant"]) && $_GET["oc-variant"] != ""){
+			/**
+			 * clear text variant
+			 */
 			$service_url.="&variant=".sanitize_text_field($_GET["oc-variant"]);
+		} else {
+			/**
+			 * apply filters for variant
+			 */
+			$variant = apply_filters( 'octavius_rocks_track_variant', '');
+			if($variant != null && $variant != ''){
+				$service_url.="&variant=".$variant;
+			}
 		}
 
 		?>
