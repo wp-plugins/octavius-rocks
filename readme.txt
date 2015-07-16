@@ -4,7 +4,7 @@ Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0
 Tested up to: 4.2.2
-Stable tag: 1.2.7
+Stable tag: 1.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,9 @@ Yes. You can get your beta key at www.octavius.rocks
 1. Octavius Service
 
 == Changelog ==
+
+= 1.2.8 =
+* Referer tracking for pageview
 
 = 1.2.7 =
 * A/B variant tracking filter

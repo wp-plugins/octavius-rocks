@@ -73,7 +73,7 @@ class Octavius_Client_Public {
 		$service_url = $server.":".$port."/hit/oc-found/".$api_key."?url=".$url;
 		$service_url.= "&content_id=".$pid;
 		$service_url.= "&pagetype=".$type;
-		$service_url.= "&content_type=".$type;
+		$service_url.= "&content_type=".$type;	
 
 		/**
 		 * look for variant tracking
@@ -92,6 +92,11 @@ class Octavius_Client_Public {
 				$service_url.="&variant=".$variant;
 			}
 		}
+		/**
+		 * last step is referer data, so if the pixel url gets too long this gets cut out
+		 */
+		$service_url.= "&referer_domain=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);	
+		$service_url.= "&referer_path=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
 
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
