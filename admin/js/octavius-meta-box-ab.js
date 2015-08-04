@@ -45,13 +45,17 @@ jQuery(document).ready(function($){
     var OctaviusPostVariants = function(){
         var oc;
         var socket;
+        var $metabox;
         var $wrapper;
         var post_id;
         this.init = function(octavius){
             oc = octavius;
             socket = octavius.socket;
-            $wrapper = $(".octavius-rocks-ab-results");
+            $metabox = $("#octavius_rocks_ab_results");
+            $wrapper = $metabox.find(".octavius-rocks-ab-results");
             post_id = $wrapper.attr("data-post-id");
+            $metabox.on("click",".octavius-rocks-refresh", this.refresh.bind(this) );
+            $metabox.on("change",".octavius-rocks-select",this.refresh.bind(this));
             this.get_variants();
             socket.on("update_variants_hits", this.update_variants_hits);
         }
@@ -60,8 +64,15 @@ jQuery(document).ready(function($){
                 setTimeout(this.get_variants.bind(this), 100);
                 return;
             }
-            // socket.emit("get_variants_hits", {content_id: post_id, event_type: "click" });
-            socket.emit("get_variants_hits", {content_id: post_id});
+            var event_type = this.get_event_type();
+            var data = {content_id:post_id};
+            console.log(event_type);
+            if(typeof event_type != typeof undefined
+                && event_type != ""){
+                data.event_type = event_type;
+            }
+            console.log(data);
+            socket.emit("get_variants_hits", data);
         }
         this.update_variants_hits =  function(data){
             var wrapper_width = $wrapper.outerWidth(true);
@@ -86,6 +97,12 @@ jQuery(document).ready(function($){
                     .appendTo($div);
                 offset = offset+percent;
             });
+        }
+        this.get_event_type = function(){
+            return $metabox.find(".octavius-rocks-select").val();
+        }
+        this.refresh = function(){
+            this.get_variants();
         }
     };
     octavius_admin.add_module(new OctaviusPostVariants());

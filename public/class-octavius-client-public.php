@@ -95,8 +95,10 @@ class Octavius_Client_Public {
 		/**
 		 * last step is referer data, so if the pixel url gets too long this gets cut out
 		 */
-		$service_url.= "&referer_domain=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);	
-		$service_url.= "&referer_path=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+		if(isset($_SERVER['HTTP_REFERER'])){
+			$service_url.= "&referer_domain=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);
+			$service_url.= "&referer_path=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
+		}		
 
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
