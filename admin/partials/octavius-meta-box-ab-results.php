@@ -1,9 +1,14 @@
 
 <div class="octavius rocks-ab-results-controls">
-	<select class="octavius-rocks-select">
-		<option value="pageview">Pageview</option>
-		<option value="click">Click</option>
-		<option value="">All</option>
+	<select class="octavius-rocks-select-event-type">
+		<option value="">All hits</option>
+		<option selected="selected" value="pageview">Pageviews</option>
+		<option value="click">Clicks</option>
+	</select>
+	of
+	<select class="octavius-rocks-select-referrer">
+		<option value="">All referrers</option>
+		<option value="www.facebook.com">Facebook</option>
 	</select>
 	<a class="button-secondary octavius-rocks-refresh">Refresh</a>
 </div>

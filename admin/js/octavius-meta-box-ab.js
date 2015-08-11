@@ -64,23 +64,35 @@ jQuery(document).ready(function($){
                 setTimeout(this.get_variants.bind(this), 100);
                 return;
             }
+            
+            var data = {content_id:post_id, filters:[]};
+            /**
+             * event type filter
+             */
             var event_type = this.get_event_type();
-            var data = {content_id:post_id};
-            console.log(event_type);
             if(typeof event_type != typeof undefined
                 && event_type != ""){
-                data.event_type = event_type;
+                data.filters.push({name:"event_type", value:event_type});
             }
-            console.log(data);
+            /**
+             * referrer filter
+             */
+            var referrer = this.get_referrer();
+            if(typeof referrer != typeof undefined
+                && referrer != ""){
+                data.filters.push({name:"referer_domain",value:referrer});
+            }
             socket.emit("get_variants_hits", data);
         }
         this.update_variants_hits =  function(data){
             var wrapper_width = $wrapper.outerWidth(true);
-            console.log(data);
-            if(data.overall <=0) return;
+            $wrapper.empty();
+            if(data.overall <=0){
+                $wrapper.append("<p>No data found</p>");
+               return; 
+            } 
             var values = {};
             var offset = 0;
-            $wrapper.empty();
             $.each(data.variants, function(_slug, _hits){
                 var percent = (_hits/data.overall)*100;
                 var right = 100-(percent+offset);
@@ -99,7 +111,10 @@ jQuery(document).ready(function($){
             });
         }
         this.get_event_type = function(){
-            return $metabox.find(".octavius-rocks-select").val();
+            return $metabox.find(".octavius-rocks-select-event-type").val();
+        }
+        this.get_referrer = function(){
+            return $metabox.find(".octavius-rocks-select-referrer").val();
         }
         this.refresh = function(){
             this.get_variants();
