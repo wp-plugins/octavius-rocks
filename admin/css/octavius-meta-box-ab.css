@@ -2,7 +2,7 @@
  * variant results styles
  */
 .octavius-rocks-ab-results{
-	margin-top: 50px;
+	margin-top: 70px;
 	position: relative;
 	height: 50px;
 }
@@ -13,6 +13,14 @@
 	background-color: #82CC09;
 	opacity: 0.8;
 	transition: all 0.3s;
+	cursor: pointer;
+}
+.octavius-rocks-ab-result.octavius-rocks-variant-selected{
+	top:-10px;
+	z-index: 10;
+}
+.octavius-rocks-ab-result.octavius-rocks-variant-selected .octavius-rocks-ab-result-values{
+	font-weight: bold;
 }
 .octavius-rocks-ab-result:hover{
 	opacity: 1;
@@ -28,7 +36,7 @@
 }
 .octavius-rocks-ab-result-values{
 	position: absolute;
-	top: -40px;
+	top: -45px;
 	left: 50%;
 	margin-left: -30px;
 	color: black;

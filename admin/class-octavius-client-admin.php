@@ -28,6 +28,10 @@ class Octavius_Client_Admin {
 	 * flag if js base was rendered
 	 */
 	private $rendered_js_base;
+	/**
+	 * variants store
+	 */
+	public $variants;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -91,14 +95,18 @@ class Octavius_Client_Admin {
 		wp_add_dashboard_widget(
 			'octavius_ab_results',
 			'A/B Results',
-			array($this, 'render_ab_results')
+			array($this, 'render_ab_results'),
+			array($this, 'control_ab_results')
 		);
 	}
 	private function dashboardOptions($options = null){
 		if($options != null){
 			return update_option('octavius_dashboard_widget_options', $options);
 		} else {
-			return get_option('octavius_dashboard_widget_options', array("number" => 5) );
+			return array_merge( 
+					array("number" => 5, "ab_limit" => 100, "ab_type" => "pageview"), 
+					get_option('octavius_dashboard_widget_options', array() )
+				);
 		}
 	}
 	private function render_octavius_js_base(){
@@ -167,9 +175,33 @@ class Octavius_Client_Admin {
 	 */
 	public function render_ab_results(){
 		$this->render_octavius_js_base();
-
+		$options = $this->dashboardOptions();
+		$limit = $options["ab_limit"];
+		$type = $options["ab_type"];
 		include dirname(__FILE__)."/partials/octavius-dashboard-ab.php";
 
+	}
+	public function control_ab_results(){
+		$widget_options = $this->dashboardOptions();
+		if(isset($_POST['widget-octavius-ab-limit'])){
+			$number = intval($_POST['widget-octavius-ab-limit']);
+			$widget_options['ab_limit'] = $number;
+			$widget_options["ab_type"] = $_POST["widget-octavius-ab-type"];
+			$this->dashboardOptions($widget_options);
+		}
+
+		echo '<p><label for="octavius-ab-limit">' . __('Limit for variants:'). '</label>';
+		echo '<input id="octavius-ab-limit" name="widget-octavius-ab-limit" type="text" value="' . $widget_options["ab_limit"] . '" size="5" /></p>';
+		$selected = "selected='selected'";
+		?>
+		<p><?php echo __("Event type"); ?>
+		<select name="widget-octavius-ab-type">
+			<option value="" <?php if($widget_options["ab_type"] == "") echo $selected ?>><?php echo __("All"); ?></option>
+			<option value="pageview" <?php if($widget_options["ab_type"] == "pageview") echo $selected ?>><?php echo __("Pageviews"); ?></option>
+			<option value="click" <?php if($widget_options["ab_type"] == "click") echo $selected ?>><?php echo __("Clicks"); ?></option>
+		</select>
+		</p>
+		<?php
 	}
 	/**
 	 * meta boxes

@@ -48,16 +48,51 @@ jQuery(document).ready(function($){
         var $metabox;
         var $wrapper;
         var post_id;
+        var variants = {};
         this.init = function(octavius){
             oc = octavius;
             socket = octavius.socket;
+            $(".octavius-rocks-variant-label").each(function(i,e){
+                variants[e.getAttribute("data-slug")] = e.getAttribute("data-name");
+            });
             $metabox = $("#octavius_rocks_ab_results");
             $wrapper = $metabox.find(".octavius-rocks-ab-results");
             post_id = $wrapper.attr("data-post-id");
             $metabox.on("click",".octavius-rocks-refresh", this.refresh.bind(this) );
             $metabox.on("change",".octavius-rocks-select",this.refresh.bind(this));
+            $wrapper.on("click", ".octavius-rocks-ab-result", this.select_variant);
             this.get_variants();
             socket.on("update_variants_hits", this.update_variants_hits);
+        }
+        this.select_variant = function(e){
+            var $this = $(this);
+            function ajax(value, success){
+                $.ajax({
+                    url: ajaxurl+"?action=set_post_ab_variant",
+                    dataType: "json",
+                    method: "POST",
+                    data: {pid: post_id, variant_slug: value},
+                    success: success,
+                    error: function(a,b,c){
+                        console.log([a,b,c]);
+                    }
+                });
+            }
+            if($this.hasClass("octavius-rocks-variant-selected")){
+                ajax("",function(_data){
+                    if(_data.success){
+                        $this.removeClass("octavius-rocks-variant-selected");
+                    }
+                });
+                return; 
+            } 
+            $this.siblings().removeClass("octavius-rocks-variant-selected");
+            ajax($this.attr("data-slug"),function(_data){
+                if(_data.success){
+                    $this.addClass("octavius-rocks-variant-selected");
+                }
+            });
+            
         }
         this.get_variants = function(){
             if(!oc.admincore.is_ready){
@@ -93,19 +128,27 @@ jQuery(document).ready(function($){
             } 
             var values = {};
             var offset = 0;
+            var selected_slug = $wrapper.data("selected-slug");
             $.each(data.variants, function(_slug, _hits){
                 var percent = (_hits/data.overall)*100;
                 var right = 100-(percent+offset);
                 var percent_readable = Math.floor(percent);
+                var title = _slug;
+                var selected_class = "";
+                if(selected_slug == _slug){
+                    selected_class = " octavius-rocks-variant-selected";
+                }
+                if(typeof variants[_slug] != typeof undefined) title = variants[_slug];
                 var $div = $("<div></div>")
-                    .addClass("octavius-rocks-ab-result")
+                    .addClass("octavius-rocks-ab-result"+selected_class)
                     .css("left", offset+"%")
                     .css("right", right+"%")
-                    .attr("title", _slug+" "+percent_readable+"% Hits: "+_hits)
+                    .attr("title", title+" "+percent_readable+"% Hits: "+_hits)
+                    .attr("data-slug", _slug)
                     .prependTo($wrapper);
                 var $percent = $("<span></span>")
                     .addClass("octavius-rocks-ab-result-values")
-                    .html(_slug+"<br>"+percent_readable+"% Hits: "+_hits)
+                    .html(title+"<br>"+percent_readable+"% Hits: "+_hits)
                     .appendTo($div);
                 offset = offset+percent;
             });

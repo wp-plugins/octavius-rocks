@@ -4,6 +4,9 @@
  * The admin-specific functionality of the plugin.
  */
 class Octavius_Rocks_Ab_Variants_Store {
+	/**
+	 * all registered variants
+	 */
 	public function get(){
 		return get_option("_octavius_rocks_ab_variants", array());
 	}
@@ -29,5 +32,18 @@ class Octavius_Rocks_Ab_Variants_Store {
 			$result[$slug] = $this->get_post_metas($post_id, $slug);
 		}
 		return $result;
+	}
+	/**
+	 * for locked variant on post
+	 */
+	public function set_variant($post_id, $slug){
+		if($slug == ""){
+			return delete_post_meta($post_id,"_octavius_rocks_variant");
+		} else {
+			return update_post_meta($post_id,"_octavius_rocks_variant",$slug);
+		}
+	}
+	public function get_variant($post_id){
+		return get_post_meta($post_id,"_octavius_rocks_variant",true);
 	}
 }

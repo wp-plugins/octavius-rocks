@@ -13,6 +13,9 @@
 	<a class="button-secondary octavius-rocks-refresh">Refresh</a>
 </div>
 
-<div class="octavius-rocks-ab-results" data-post-id="<?php echo $post->ID; ?>">
+
+<div class="octavius-rocks-ab-results" 
+data-post-id="<?php echo $post->ID; ?>" 
+data-selected-slug="<?php echo $this->variants->get_variant($post->ID); ?>">
 	<p>Chart is loading...</p>
 </div>

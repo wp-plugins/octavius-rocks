@@ -1,13 +1,20 @@
 <ul class="octavius-rocks-variants">
 <?php
 global $post;
+$selected_slug = $this->variants->get_variant($post->ID);
 foreach ($variants as $slug => $name) {
     $values = $this->variants->get_post_metas($post->ID, $slug);
     wp_get_attachment_image($values->attachment_id);
+    $selected_class = "";
+    if($selected_slug == $slug){
+        $selected_class = "octavius-rocks-variant-selected";
+    }
     ?>
     
-    <li class="octavius-rocks-variant">
-        <label for="octavius-rocks-<?php echo $slug; ?>"><?php echo $name; ?></label>
+    <li class="octavius-rocks-variant <?php echo $selected_class; ?>">
+        <label for="octavius-rocks-<?php echo $slug; ?>" 
+        class="octavius-rocks-variant-label"
+        data-slug="<?php echo $slug ?>" data-name="<?php echo $name; ?>" ><?php echo $name; ?></label>
         <div class="octavius-rocks-contents">
             
             <p><input id="octavius-rocks-<?php echo $slug; ?>" type="text" 

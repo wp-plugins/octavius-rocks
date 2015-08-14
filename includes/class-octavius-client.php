@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.3.0';
+		$this->version = '1.3.1';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -96,9 +96,8 @@ class Octavius_Client {
 		 * variants store
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-octavius-rocks-ab-variants-store.php';
+
 		$this->variants = new Octavius_Rocks_Ab_Variants_Store();
-
-
 		$this->loader = new Octavius_Client_Loader();
 
 	}
@@ -121,7 +120,9 @@ class Octavius_Client {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Octavius_Client_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin->variants = $this->variants;
 		$ajax = new Octavius_Ajax( $this->get_plugin_name(), $this->get_version() );
+		$ajax->variants = $this->variants;
 		
 		/**
 		 * add scripts
@@ -143,6 +144,16 @@ class Octavius_Client {
 		$this->loader->add_action('wp_ajax_get_posts_titles', $ajax, 'get_posts_titles');
 
 		/**
+		 * set variant to post meta
+		 */
+		$this->loader->add_action('wp_ajax_set_post_ab_variant', $ajax, 'set_post_ab_variant');
+
+		/**
+		 * post ab info call
+		 */
+		$this->loader->add_action('wp_ajax_get_ab_info', $ajax, 'get_ab_info');
+
+		/**
 		 * admin bar button
 		 */
 		$this->loader->add_action( 'admin_bar_menu', $plugin_admin, 'add_admin_bar_button', 999 );
@@ -151,7 +162,6 @@ class Octavius_Client {
 		 * if there is an alternate teaser variante render meta box
 		 */
 		if(count($this->variants->get()) > 0){
-			$plugin_admin->variants = $this->variants;
 			$this->loader->add_action('add_meta_boxes', $plugin_admin, 'add_meta_box_ab');
 			$this->loader->add_action('save_post', $plugin_admin, 'save_meta_box_ab');
 		}
@@ -180,6 +190,7 @@ class Octavius_Client {
 	private function define_public_hooks() {
 
 		$plugin_public = new Octavius_Client_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public->variants = $this->variants;
 
 		$this->loader->add_action( 'wp_footer', $plugin_public, 'render_script', 100 );
 
@@ -191,7 +202,6 @@ class Octavius_Client {
 		/**
 		 * add variants to post object
 		 */
-		$plugin_public->variants = $this->variants;
 		$this->loader->add_action( 'the_post', $plugin_public, 'add_variants_to_post' );
 
 	}
@@ -203,6 +213,7 @@ class Octavius_Client {
 	private function define_grid_hooks() {
 
 		$plugin_grid = new Octavius_Grid_Controller( $this->get_plugin_name(), $this->get_version() );
+		$plugin_grid->variants = $this->variants;
 
 		$this->loader->add_action( 'grid_load_classes', $plugin_grid, 'load_classes');
 		$this->loader->add_filter('grid_templates_paths', $plugin_grid, 'templates_paths');
