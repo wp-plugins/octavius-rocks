@@ -22,6 +22,10 @@ class Octavius_Client_Public {
 	 */
 	private $version;
 
+	private $api_key;
+	private $server;
+	private $port;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -29,6 +33,17 @@ class Octavius_Client_Public {
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+
+		/**
+		 * not logged in or abonnement track the user
+		 */
+		$api_key_id = "ph_octavius_api_key";
+		$server_id = "ph_octavius_server";
+		$port_id = "ph_octavius_port";
+
+		$this->api_key = get_option($api_key_id,'');
+		$this->server = get_option($server_id, '');
+		$this->port = get_option($port_id, '');
 	}
 
 	/**
@@ -36,17 +51,67 @@ class Octavius_Client_Public {
 	 *
 	 */
 	public function render_script() {
-
-		$api_key_id = "ph_octavius_api_key";
-		$server_id = "ph_octavius_server";
-		$port_id = "ph_octavius_port";
-
-		$api_key = get_option($api_key_id,'');
-		$server = get_option($server_id, '');
-		$port = get_option($port_id, '');
-
+		global $post;
+		wp_reset_postdata();
+		/**
+		 * always init octavius
+		 */
 		?>
+		<script type="text/javascript">
+		window.OctaviusInit = function(octavius){
+			octavius.config.service = "<?php echo $this->server; ?>:<?php echo $this->port; ?>";
+			octavius.api_key = "<?php echo $this->api_key; ?>";
+		};
+		</script>
+		<?php
 
+		
+		$user = wp_get_current_user();
+		if ( !in_array( 'author', (array) $user->roles )
+		&& !in_array( 'contributor', (array) $user->roles )
+		&& !in_array( 'editor', (array) $user->roles )
+		&& !in_array( 'administrator', (array) $user->roles ) ) {
+			/**
+			 * track if users are abonnements or neutral
+			 */	
+		    $this->render_tracking_script();
+		} else {
+			/**
+			 * dont track if user is logged in with min editor role
+			 */
+			?>
+			<script type="text/javascript">
+			window.OctaviusOverwrites = function(octavius){
+				octavius.send_hits = function(){
+					return false;
+				};
+			};
+			</script>
+			<?php
+		}
+
+		/**
+		 * get octavius JS from server
+		 */
+		?>
+		<script type="text/javascript">
+		
+		(function(d){
+			var js, id = 'octavius-script', ref = d.getElementsByTagName('script')[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement('script'); js.id = id; js.async = true;
+			js.src = "<?php echo $this->server; ?>:<?php echo $this->port; ?>/files/octavius.client.v1.0.js";
+			ref.parentNode.insertBefore(js, ref);
+		}(document));
+		</script>
+		<?php
+	}
+	/**
+	 * render scripts for tracking
+	 */
+	private function render_tracking_script(){
+		global $post;
+		?>
 		<style type="text/css">
 		#octavius-needed-pixel {
 			height: 0px;
@@ -70,7 +135,7 @@ class Octavius_Client_Public {
 			$pid = $this->get_content_id();
 		}
 
-		$service_url = $server.":".$port."/hit/oc-found/".$api_key."?url=".$url;
+		$service_url = $this->server.":".$this->port."/hit/oc-found/".$this->api_key."?url=".$url;
 		$service_url.= "&content_id=".$pid;
 		$service_url.= "&pagetype=".$type;
 		$service_url.= "&content_type=".$type;	
@@ -78,35 +143,33 @@ class Octavius_Client_Public {
 		/**
 		 * look for variant tracking
 		 */
-		if(isset($_GET["oc-variant"]) && $_GET["oc-variant"] != ""){
-			/**
-			 * clear text variant
-			 */
-			$service_url.="&variant=".sanitize_text_field($_GET["oc-variant"]);
-		} else {
-			/**
-			 * apply filters for variant
-			 */
-			$variant = apply_filters( 'octavius_rocks_track_variant', '');
-			if($variant != null && $variant != ''){
-				$service_url.="&variant=".$variant;
+		if($post->octavius_variant == null ){
+			if(isset($_GET["oc-variant"]) && $_GET["oc-variant"] != ""){
+				/**
+				 * clear text variant
+				 */
+				$service_url.="&variant=".sanitize_text_field($_GET["oc-variant"]);
+			} else {
+				/**
+				 * apply filters for variant
+				 */
+				$variant = apply_filters( 'octavius_rocks_track_variant', '');
+				if($variant != null && $variant != ''){
+					$service_url.="&variant=".$variant;
+				}
 			}
 		}
+		
 		/**
 		 * last step is referer data, so if the pixel url gets too long this gets cut out
 		 */
 		if(isset($_SERVER['HTTP_REFERER'])){
 			$service_url.= "&referer_domain=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);
 			$service_url.= "&referer_path=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-		}		
-
+		}	
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
 		<script type="text/javascript">
-		window.OctaviusInit = function(octavius){
-			octavius.config.service = "<?php echo $server; ?>:<?php echo $port; ?>";
-			octavius.api_key = "<?php echo $api_key; ?>";
-		};
 		window.OctaviusOverwrites = function(octavius){
 			octavius.get_parent_id = function(){
 				return "<?php echo $this->get_content_id(); ?>";
@@ -115,13 +178,6 @@ class Octavius_Client_Public {
 				return "<?php echo $this->get_pagetype(); ?>";
 			};
 		};
-		(function(d){
-			var js, id = 'octavius-script', ref = d.getElementsByTagName('script')[0];
-			if (d.getElementById(id)) {return;}
-			js = d.createElement('script'); js.id = id; js.async = true;
-			js.src = "<?php echo $server; ?>:<?php echo $port; ?>/files/octavius.client.v1.0.js";
-			ref.parentNode.insertBefore(js, ref);
-		}(document));
 		</script>
 		<?php
 	}
@@ -219,9 +275,17 @@ class Octavius_Client_Public {
 	 */
 	public function add_variants_to_post($post) {
 		/**
-		 * add to post object for easy access
+		 * all variants
 		 */
 		$post->octavius_variants = $this->variants->get_variants_values($post->ID);
+		/**
+		 * selected variant from test result
+		 */
+		$variant = $this->variants->get_variant($post->ID);
+		if($variant == "" || $variant == false){
+			$variant = null;
+		}
+		$post->octavius_variant = $variant;
 	}
 
 }

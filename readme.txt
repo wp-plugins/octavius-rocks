@@ -4,7 +4,7 @@ Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0
 Tested up to: 4.3
-Stable tag: 1.3.1
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,14 @@ Yes. You can get your beta key at www.octavius.rocks
 1. Octavius Service
 
 == Changelog ==
+
+= 1.3.3 =
+ * Only logged out and abonnement users get tracked 
+
+= 1.3.2 = 
+ * WP 4.3 tested
+ * Variant result loaded to post object
+ * ignore pageview variant if variant is selected
 
 = 1.3.1 = 
  * AB results with variant names
