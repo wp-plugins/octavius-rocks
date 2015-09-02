@@ -82,6 +82,21 @@ class Octavius_Client_Settings {
 		/**
 		 * save if needed
 		 */
+		if(isset($_POST['submit'])){
+			/**
+			 * update ab settings
+			 */
+			$enabled = 0;
+			if(isset($_POST["octavius_rocks_ab_enabled"])){
+				$enabled = intval($_POST["octavius_rocks_ab_enabled"]);
+			}
+			if($enabled < 1){
+				$enabled = 0;
+			} else {
+				$enabled = 1;
+			}
+			$this->variants->enabled($enabled);
+		}
 		if(isset($_POST) && isset($_POST["octavius_rocks"]) && is_array($_POST["octavius_rocks"])){
 			$oc = $_POST["octavius_rocks"];
 			$values = array();
@@ -108,15 +123,11 @@ class Octavius_Client_Settings {
 				$values[$slug] = $name;
 			}
 			$this->variants->save($values);
-			/**
-			 * update ab settings
-			 */
-			update_option('octavius_rocks_ab_min_hits', intval($_POST["octavius_rocks_ab_min_hits"]));
 		}
 		/**
 		 * render settings page
 		 */
-		$min_hits = get_option('octavius_rocks_ab_min_hits', 10);
+		$ab_enabled = $this->variants->enabled();
 		$all = $this->variants->get();
 		require dirname(__FILE__)."/partials/octavius-settings-ab.php";
 	}

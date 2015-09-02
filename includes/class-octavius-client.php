@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.3.3';
+		$this->version = '1.3.4';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -161,7 +161,7 @@ class Octavius_Client {
 		/**
 		 * if there is an alternate teaser variante render meta box
 		 */
-		if(count($this->variants->get()) > 0){
+		if( $this->variants->enabled() && count($this->variants->get()) > 0){
 			$this->loader->add_action('add_meta_boxes', $plugin_admin, 'add_meta_box_ab');
 			$this->loader->add_action('save_post', $plugin_admin, 'save_meta_box_ab');
 		}

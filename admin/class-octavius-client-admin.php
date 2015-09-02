@@ -91,13 +91,14 @@ class Octavius_Client_Admin {
 			array($this, 'render_top_clicks'),	// Display function
 			array($this, 'control_top_clicks') 		// Controll Function
 		);
-
-		wp_add_dashboard_widget(
-			'octavius_ab_results',
-			'A/B Results',
-			array($this, 'render_ab_results'),
-			array($this, 'control_ab_results')
-		);
+		if($this->variants->enabled()){
+			wp_add_dashboard_widget(
+				'octavius_ab_results',
+				'A/B Results',
+				array($this, 'render_ab_results'),
+				array($this, 'control_ab_results')
+			);
+		}
 	}
 	private function dashboardOptions($options = null){
 		if($options != null){
@@ -150,12 +151,6 @@ class Octavius_Client_Admin {
 		wp_enqueue_script( 'octavius-admin-core', plugin_dir_url( __FILE__ ) . 'js/octavius-admin-core.js', array(), '1.0', true );
 		wp_enqueue_script( 'octavius-admin-dashboard', plugin_dir_url( __FILE__ ) . 'js/octavius-dashboard.js', array(), '1.0', true );
 
-		// require_once dirname(__FILE__)."/../classes/Octavius_Top_Links_Table.php";
-		// $wp_list_table = new Octavius_Top_Links_Table();
-		// $wp_list_table->prepare_items($options["number"]);
-		// $wp_list_table->display();
-		
-		// TODO: enqueue js
 		include dirname(__FILE__)."/partials/octavius-dashboard-top-clicks.php";
 
 	}

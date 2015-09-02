@@ -46,4 +46,13 @@ class Octavius_Rocks_Ab_Variants_Store {
 	public function get_variant($post_id){
 		return get_post_meta($post_id,"_octavius_rocks_variant",true);
 	}
+	/**
+	 * is octavius enabled?
+	 */
+	public function enabled( $enabled = null ){
+		if($enabled !== null){
+			update_option("_octavius_rocks_ab_enabled", $enabled);
+		}
+		return get_option('_octavius_rocks_ab_enabled', false);
+	}
 }
