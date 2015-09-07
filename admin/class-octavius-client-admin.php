@@ -42,9 +42,19 @@ class Octavius_Client_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->rendered_js_base = false;
-
+		
 	}
 	
+	/**
+	* Add Scripts for octavius
+	*/
+	public function add_admin_scripts(){
+		if ( is_user_logged_in() ) {	
+			wp_enqueue_script( 'octavius-socketio', plugin_dir_url( __FILE__ ) . 'js/socket.io-1.3.5.js', array(), '1.3.5', true );
+			wp_enqueue_script( 'octavius-admin-core', plugin_dir_url( __FILE__ ) . 'js/octavius-admin-core.js', array(), '1.0', true );
+		}
+	}
+
 	/**
 	 * add evaluating script
 	 */
@@ -110,7 +120,7 @@ class Octavius_Client_Admin {
 				);
 		}
 	}
-	private function render_octavius_js_base(){
+	public function render_octavius_js_base(){
 
 		if($this->rendered_js_base) return;
 		$this->rendered_js_base = true;
@@ -143,7 +153,6 @@ class Octavius_Client_Admin {
 	 * dashboard top clicks
 	 */
 	public function render_top_clicks(){
-		$this->render_octavius_js_base();
 
 		$options = $this->dashboardOptions();
 		$limit = $options["number"];
@@ -169,7 +178,6 @@ class Octavius_Client_Admin {
 	 * dashboard ab results
 	 */
 	public function render_ab_results(){
-		$this->render_octavius_js_base();
 		$options = $this->dashboardOptions();
 		$limit = $options["ab_limit"];
 		$type = $options["ab_type"];

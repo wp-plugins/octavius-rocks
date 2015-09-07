@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.3.4';
+		$this->version = '1.3.5';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -157,6 +157,13 @@ class Octavius_Client {
 		 * admin bar button
 		 */
 		$this->loader->add_action( 'admin_bar_menu', $plugin_admin, 'add_admin_bar_button', 999 );
+		
+		/**
+		 * Hooks for adding admin scripts 
+		 */
+		$this->loader->add_action('octavius_client_admin_add_scripts',  $plugin_admin, 'add_admin_scripts');
+		$this->loader->add_action('admin_head', $plugin_admin, 'render_octavius_js_base');
+		//$this->loader->add_action('wp_head', $plugin_admin, 'render_octavius_js_base'); TODO is already in frontend theme
 
 		/**
 		 * if there is an alternate teaser variante render meta box

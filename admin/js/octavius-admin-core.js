@@ -12,6 +12,7 @@
 		var config = null;
 		var is_ready  = this.is_ready = false;
 		var socket = this.socket = null;
+		var inited = false;
 
 		this.init = function(octavius){
 			var self = this;
@@ -46,11 +47,15 @@
 		var _modules = [];
 		this.add_module = function(module){
 			_modules.push(module);
+			if(inited){
+				module.init(oc);
+			}
 		}
 		this.init_modules = function(octavius){
 			for( var i = 0; i < _modules.length; i++){
 				_modules[i].init(octavius);
 			}
+			inited = true;
 		}
 
 	}
