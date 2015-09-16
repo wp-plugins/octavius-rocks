@@ -37,7 +37,7 @@ class Octavius_Client {
 	public function __construct() {
 
 		$this->plugin_name = 'octavius-client';
-		$this->version = '1.3.5';
+		$this->version = '1.3.6';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -152,6 +152,11 @@ class Octavius_Client {
 		 * post ab info call
 		 */
 		$this->loader->add_action('wp_ajax_get_ab_info', $ajax, 'get_ab_info');
+		
+		/**
+		 * get all post ids from not chosen ab posts
+		 */
+		$this->loader->add_action('wp_ajax_get_ab_posts_not_chosen', $ajax, 'get_ab_posts_not_chosen');
 
 		/**
 		 * admin bar button

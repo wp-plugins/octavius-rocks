@@ -49,6 +49,7 @@ jQuery(document).ready(function($){
         var $wrapper;
         var post_id;
         var variants = {};
+        var $report_wrapper;
         this.init = function(octavius){
             oc = octavius;
             socket = octavius.socket;
@@ -57,12 +58,17 @@ jQuery(document).ready(function($){
             });
             $metabox = $("#octavius_rocks_ab_results");
             $wrapper = $metabox.find(".octavius-rocks-ab-results");
+            $report_wrapper = $metabox.find('.octavius-rocks-ab-report');
             post_id = $wrapper.attr("data-post-id");
             $metabox.on("click",".octavius-rocks-refresh", this.refresh.bind(this) );
             $metabox.on("change",".octavius-rocks-select",this.refresh.bind(this));
             $wrapper.on("click", ".octavius-rocks-ab-result", this.select_variant);
             this.get_variants();
             socket.on("update_variants_hits", this.update_variants_hits);
+            //get ab report 
+            //TODO only for posts younger than render tracking
+            socket.on("update_get_ab_report", this.update_ab_report);
+            this.get_ab_report();
         }
         this.select_variant = function(e){
             var $this = $(this);
@@ -152,6 +158,75 @@ jQuery(document).ready(function($){
                     .appendTo($div);
                 offset = offset+percent;
             });
+        }
+        //check if post is newer than date when render tracking was enabled
+        this.is_rendered_tracked = function(releaseDateString){
+	        var theDateString = '09-10-2015';
+	        var theDate = new Date(theDateString);
+			var releaseDate = new Date(releaseDateString);
+			if(theDate <= releaseDate){
+				return true;
+			}
+	        return false;
+        }
+        this.show_too_old_notice = function(){
+	        $report_wrapper.html("Dieser Eintrag ist zu alt. Es liegen keine Daten zur Berechnung der Signifikanz vor.");
+        }
+        this.get_ab_report = function(){
+	        //TODO use one class doing this. Use class in octavius_grid
+	        //check if post is released after the day rendering was tracked
+	        if(!this.is_rendered_tracked($report_wrapper.attr("data-octavius-postdate"))){
+		        this.show_too_old_notice();
+				return;
+		    }
+	        if(!oc.admincore.is_ready){
+                setTimeout(this.get_ab_report.bind(this), 100);
+                return;
+            }
+            socket.emit("get_ab_report", {content_id:post_id});
+        }
+        this.update_ab_report =  function(data){
+            //build html
+            var html = "<h2>AB-Test Ergebnisse</h2>";
+		    html += "<strong>Rendered</strong>";
+		    for(var variant in data.rendered_total){
+			    var number = data.rendered_total[variant];
+			    html += "<br>"+variant+": "+number;
+		    }
+		    html += "<br><br><strong>Clicked</strong>";
+		    for(var variant in data.clicked_total){
+			    var number = data.clicked_total[variant];
+			    html += "<br>"+variant+": "+number;
+		    }
+		    html += "<br><br><strong>Conversion Rate</strong>";
+		    for(var variant in data.rendered_total){
+			    var numberRendered = data.rendered_total[variant];
+			    var numberClicked = data.clicked_total[variant];
+			    var conversionRate = "No Data available";
+			    if(!isNaN(numberClicked) && !isNaN(numberRendered) && numberRendered > 0){
+			    	var conversionRate = numberClicked/numberRendered*100+"%";
+			    }
+			    html += "<br>"+variant+": "+conversionRate;
+		    }
+		    //significance
+		    if(data.significance){
+			    html += "<br><br><strong>Signifikanz</strong>";
+			    if(data.significance.error){
+				    html += "<br>Keine Aussage über die Signifikanz möglich (Datengrundlage zu gering).";
+			    }
+			    if(data.significance['95']){
+				     html += "<br>Die Daten sind statistisch signifikant.";
+			    }
+			    if(data.significance['99']){
+				     html += "<br>Die Daten sind statistisch höchst signifikant.";
+			    }
+			    if(data.significance['not']){
+				     html += "<br>Die Daten sind statistisch nicht signifikant.";
+			    }
+		    }
+		    //add html to dom
+		    $report_wrapper.html(html);
+            
         }
         this.get_event_type = function(){
             return $metabox.find(".octavius-rocks-select-event-type").val();

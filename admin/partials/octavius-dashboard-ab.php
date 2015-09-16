@@ -1,5 +1,4 @@
 <input type="hidden" id="octavius-rocks-ab-limit" value="<?php echo $limit; ?>" />
-<input type="hidden" id="octavius-rocks-ab-type" value="<?php echo $type; ?>">
 <div id="octavius-rocks-ab-button-template"><?php echo submit_button(__("Use variant"), "small"); ?></div>
 <table class="wp-list-table widefat fixed striped">
 	<thead>

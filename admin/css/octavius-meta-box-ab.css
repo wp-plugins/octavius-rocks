@@ -65,3 +65,9 @@
 .octavius-rocks-variant textarea{
 	width: 100%;
 }
+/**
+ * ab report styles
+ */
+.octavius-rocks-ab-report{
+	margin: 20px 0;
+}

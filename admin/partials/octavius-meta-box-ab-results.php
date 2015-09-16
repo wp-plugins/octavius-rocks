@@ -19,3 +19,5 @@ data-post-id="<?php echo $post->ID; ?>"
 data-selected-slug="<?php echo $this->variants->get_variant($post->ID); ?>">
 	<p>Chart is loading...</p>
 </div>
+
+<div class="octavius-rocks-ab-report" data-octavius-postdate="<?php echo get_the_date('m-d-Y');?>">Report is loading...</div>

@@ -189,21 +189,12 @@ class Octavius_Client_Admin {
 		if(isset($_POST['widget-octavius-ab-limit'])){
 			$number = intval($_POST['widget-octavius-ab-limit']);
 			$widget_options['ab_limit'] = $number;
-			$widget_options["ab_type"] = $_POST["widget-octavius-ab-type"];
 			$this->dashboardOptions($widget_options);
 		}
 
-		echo '<p><label for="octavius-ab-limit">' . __('Limit for variants:'). '</label>';
+		echo '<p><label for="octavius-ab-limit">' . __('Minimum Number for total clicks: '). '</label>';
 		echo '<input id="octavius-ab-limit" name="widget-octavius-ab-limit" type="text" value="' . $widget_options["ab_limit"] . '" size="5" /></p>';
-		$selected = "selected='selected'";
 		?>
-		<p><?php echo __("Event type"); ?>
-		<select name="widget-octavius-ab-type">
-			<option value="" <?php if($widget_options["ab_type"] == "") echo $selected ?>><?php echo __("All"); ?></option>
-			<option value="pageview" <?php if($widget_options["ab_type"] == "pageview") echo $selected ?>><?php echo __("Pageviews"); ?></option>
-			<option value="click" <?php if($widget_options["ab_type"] == "click") echo $selected ?>><?php echo __("Clicks"); ?></option>
-		</select>
-		</p>
 		<?php
 	}
 	/**

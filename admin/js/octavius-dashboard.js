@@ -25,10 +25,12 @@
 		var socket = null;
 		var oc = null;
 		
+		var theDate = new Date('09-10-2015');//daten when rendered was tracked on zett
+		
 		this.init = function(octavius){
 			oc = octavius;
 			socket = octavius.socket;
-
+			
 			this.init_top();
 			this.init_ab();
 		}
@@ -39,15 +41,18 @@
 			/**
 			 * upate table on socket event
 			 */
-			socket.on('update_ab_top_contents', function(data){
-				console.log(data);
-				// TODO: send all content ids to backend and check if already done
-				// TODO: display all over limit and hide all closed
+			socket.on('update_ab_top_reports', function(data){
+				if(data.error){ //if no results found
+					$results_ab.empty();
+					$loading_ab.css("visibility", "hidden");
+					$results_ab.append("Momentan keine Posts für die Auswertung verfügbar.");
+					return;
+				}
 				var content_ids = [];
 				var ids_map = {};
 				var content_id = "";
-				for( var i = 0; i < data.result.length; i++){
-					var result = data.result[i];
+				for( var i = 0; i < data.length; i++){
+					var result = data[i];
 					if(content_id == result.content_id) continue;
 					content_id = result.content_id;
 					content_ids.push(result.content_id);
@@ -63,34 +68,45 @@
 					success: function(_data){
 						$results_ab.empty();
 						$loading_ab.css("visibility", "hidden");
-						console.log(_data);
-						if(!_data.success){
-							console.error(_data);
-						} else {
-							for( var i = 0; i < _data.result.length; i++){
-								var result = _data.result[i];
-								if(result.locked) continue;
-								var ob = ids_map[result.content_id];
-								var $tr = $("<tr></tr>");
-								$tr.append("<td><a href='/wp-admin/post.php?post="
-									+ob.content_id+"&action=edit'>"+result.title+
-									"</a></td>");
-								$tr.append("<td>"+ob.variant+"  <small>["+ob.hits+" hits]</small></td>");
-								var $button = $button_template.clone();
-								$button.show();
-								var $td = $("<td></td>")
-								.addClass("octavius-rocks-variant-submit")
-								.attr("data-pid",result.content_id)
-								.attr("data-slug",ob.variant);
-								$tr.append($td.append($button));
-								$results_ab.append($tr);
+						for( var i = 0; i < _data.result.length; i++){
+							var result = _data.result[i];
+							var releaseDate = new Date(result.date);
+							if(theDate > releaseDate) continue; //cannot calculate signigicance for old posts
+							var ob = ids_map[result.content_id];
+							if(ob.significance.error) continue; //hide results with not calculatable significance
+							var $tr = $("<tr></tr>");
+							$tr.append("<td><a href='/wp-admin/post.php?post="
+								+ob.content_id+"&action=edit'>"+result.title+
+								"</a></td>");
+							
+							//chose variant by highest conversion rate
+							var winner_variant_slug = 'standard';
+							var winner_variant_conversionrate = ob.conversion_rates.standard;
+							
+							//TODO show significance
+							if(ob.significance['95'] || ob.significance['99']){ //only give possibility to chose other than standard when is significantly better
+								for(var conversion_rate_slug in ob.conversion_rates){
+									if(ob.conversion_rates[conversion_rate_slug] > winner_variant_conversionrate){
+										winner_variant_slug = conversion_rate_slug;
+										winner_variant_conversionrate = ob.conversion_rates[conversion_rate_slug];
+									}
+								}	
 							}
+							$tr.append("<td>"+winner_variant_slug+"  <small>["+winner_variant_conversionrate+"%]</small></td>");
+							var $button = $button_template.clone();
+							$button.show();
+							var $td = $("<td></td>")
+							.addClass("octavius-rocks-variant-submit")
+							.attr("data-pid",result.content_id)
+							.attr("data-slug",winner_variant_slug);
+							$tr.append($td.append($button));
+							$results_ab.append($tr);
 						}
 					},
 					error: function(a,b,c){
 						console.log([a,b,c]);
 					}
-				});				
+				});
 				
 			});
 			this.get_ab_significant_contents();
@@ -99,6 +115,7 @@
 			 */
 			$results_ab.on("click", "[type=submit]", function(){
 				var $info = $(this).closest(".octavius-rocks-variant-submit");
+				//TODO working?
 				var pid = $info.attr("data-pid");
 				var slug = $info.attr("data-slug");
 				console.log([$info,pid,slug]); 
@@ -108,7 +125,6 @@
 					method: "POST",
 					data: {pid: pid, variant_slug: slug},
 					success: function(_data){
-						console.log(_data);
 						if(_data.success){
 							$info.closest("tr").remove();
 						}
@@ -132,12 +148,18 @@
 				this.get_ab_significant_contents();
 				return;
 			}
-			var filters = [];
-			if($type_ab.val() != ""){
-				filters.push({ name: "event_type", value: $type_ab.val() });
-			}
 			
-			socket.emit("get_ab_top_contents",{	limit: $limit_ab.val(), filters: filters });
+			// get all ids from posts that have no chosen variant
+			$.ajax({
+				url: ajaxurl+"?action=get_ab_posts_not_chosen",
+				method: "POST",
+				success: function(_data){
+					socket.emit("get_ab_top_reports",{	limit: $limit_ab.val(), content_ids: _data });
+				},
+				error: function(a,b,c){
+					console.log([a,b,c]);
+				}
+			});
 		}
 		/**
 		 * inits all for top content connection

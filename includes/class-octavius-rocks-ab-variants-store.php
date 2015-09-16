@@ -46,6 +46,22 @@ class Octavius_Rocks_Ab_Variants_Store {
 	public function get_variant($post_id){
 		return get_post_meta($post_id,"_octavius_rocks_variant",true);
 	}
+	public function get_posts_variant_not_set(){
+		$args = array(
+			'meta_key' => '_octavius_rocks_variant'
+		);
+		$the_query = new WP_Query( $args );
+		//Make array with postids
+		$post_ids = [];
+		if ( $the_query->have_posts() ) {
+			while ( $the_query->have_posts() ) {
+				$post_ids[] = get_the_title();
+			}
+		}
+		/* Restore original Post Data */
+		wp_reset_postdata();
+		return $post_ids;
+	}
 	/**
 	 * is octavius enabled?
 	 */

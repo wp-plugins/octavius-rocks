@@ -59,6 +59,7 @@ class Octavius_Ajax {
 				$result[] = array(
 					"content_id" => $pid,
 					"title"=>get_the_title($pid),
+					"date"=>get_the_date("m-d-Y", $pid),
 					"locked" => false,
 				);
 			} else {
@@ -69,6 +70,33 @@ class Octavius_Ajax {
 			}
 		}
 		wp_send_json(array('success' => true, "result" => $result));
+	}
+	
+	public function get_ab_posts_not_chosen(){
+		$post_ids = array();
+				
+		//get all posts that have no chosen variant
+		$args = array(
+			'meta_query' => array(
+			    array(
+			     'key' => '_octavius_rocks_variant',
+			     'compare' => 'NOT EXISTS'
+			    ),
+			)
+		);
+		// The Query
+		$the_query = new WP_Query( $args );
+		// The Loop
+		if ( $the_query->have_posts() ) {
+			while ( $the_query->have_posts() ) {
+				$the_query->the_post();
+				array_push($post_ids, get_the_ID());
+			}
+		}
+		/* Restore original Post Data */
+		wp_reset_postdata();
+		
+		wp_send_json($post_ids);
 	}
 
 	public function get_posts_titles(){

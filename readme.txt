@@ -4,7 +4,7 @@ Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0
 Tested up to: 4.3
-Stable tag: 1.3.5s
+Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,6 +32,9 @@ Yes. You can get your beta key at www.octavius.rocks
 1. Octavius Service
 
 == Changelog ==
+
+= 1.3.6 =
+ * Dashboard widget calculates results for posts by significance
 
 = 1.3.5 =
  * Hook for including octavius scripts in other plugins
