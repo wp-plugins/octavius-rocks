@@ -68,6 +68,7 @@
 					success: function(_data){
 						$results_ab.empty();
 						$loading_ab.css("visibility", "hidden");
+						var countListItems = 0;
 						for( var i = 0; i < _data.result.length; i++){
 							var result = _data.result[i];
 							var releaseDate = new Date(result.date);
@@ -101,6 +102,13 @@
 							.attr("data-slug",winner_variant_slug);
 							$tr.append($td.append($button));
 							$results_ab.append($tr);
+							countListItems++;
+						}
+						if(countListItems < 1){ //if no items added to list show errormessage
+							$results_ab.empty();
+							$loading_ab.css("visibility", "hidden");
+							$results_ab.append("Momentan keine Posts für die Auswertung verfügbar.");
+							return;
 						}
 					},
 					error: function(a,b,c){

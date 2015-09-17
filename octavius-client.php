@@ -7,7 +7,7 @@
  * Plugin Name:       Octavius Rocks
  * Plugin URI:        http://www.palasthotel.de
  * Description:       Tacking click paths
- * Version:           1.3.6
+ * Version:           1.3.7
  * Author:            PALASTHOTEL by Edward
  * Author URI:        http://www.palasthotel.de
  * License:           GPL-2.0+

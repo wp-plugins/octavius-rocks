@@ -52,7 +52,7 @@ class Octavius_Rocks_Ab_Variants_Store {
 		);
 		$the_query = new WP_Query( $args );
 		//Make array with postids
-		$post_ids = [];
+		$post_ids = array();
 		if ( $the_query->have_posts() ) {
 			while ( $the_query->have_posts() ) {
 				$post_ids[] = get_the_title();
