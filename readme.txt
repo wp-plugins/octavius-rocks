@@ -1,5 +1,5 @@
 === Octavius Rocks ===
-Contributors: Octavius.rocks,edwardbock,benjamin.birkenhake,kroppenstedt
+Contributors: Octavius.rocks,edwardbock,benjamin.birkenhake,kroppenstedt,Pixelwelt
 Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0

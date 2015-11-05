@@ -61,17 +61,14 @@ class Octavius_Client_Settings {
 		// TODO tab for server settings
 		$api_key_id = "ph_octavius_api_key";
 		$server_id = "ph_octavius_server";
-		$port_id = "ph_octavius_port";
 		
-		if( isset($_POST[$api_key_id]) && isset($_POST[$server_id]) && isset($_POST[$port_id])){
+		if( isset($_POST[$api_key_id]) && isset($_POST[$server_id]) ){
 			update_option($api_key_id, sanitize_text_field($_POST[$api_key_id]) );
 			update_option($server_id, sanitize_text_field($_POST[$server_id]) );
-			update_option($port_id, sanitize_text_field($_POST[$port_id]) );
 		}
 
 		$api_key = get_option($api_key_id, '');
 		$server = get_option($server_id, '');
-		$port = get_option($port_id, '');
 
 		require dirname(__FILE__)."/partials/octavius-settings-server.php";
 	}

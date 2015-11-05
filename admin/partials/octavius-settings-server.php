@@ -21,10 +21,6 @@
 				<th scope="row"><label for="<?php echo $server_id; ?>">Server</label></th>
 				<td><input type="text" id="<?php echo $server_id; ?>" name="<?php echo $server_id; ?>" value="<?php echo $server; ?>" class="regular-text" /></td>
 			</tr>
-			<tr>
-				<th scope="row"><label for="<?php echo $port_id; ?>">Port</label></th>
-				<td><input type="text" id="<?php echo $port_id; ?>" name="<?php echo $port_id; ?>" value="<?php echo $port; ?>" class="regular-text" /></td>
-			</tr>
 		</table>
 
 		<?php submit_button(); ?>
