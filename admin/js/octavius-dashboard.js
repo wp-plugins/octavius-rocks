@@ -10,29 +10,31 @@
 		var $type_ab = $("#octavius-rocks-ab-type");
 		var $loading_ab = $("#octavius-loading-ab");
 		var $results_ab = $("#octavius-ab-results");
-		var $button_template = $("#octavius-rocks-ab-button-template");
+		var $button_template = $("#octavius-rocks-ab-button-template").attr('style', '');
 		$button_template.hide();
 
 		var self = this;
 		var socket = null;
 		var oc = null;
-		
+
 		var theDate = new Date('09-10-2015');//daten when rendered was tracked on zett TODO
-		
+
 		this.init = function(octavius){
 			oc = octavius;
 			socket = octavius.socket;
-			
+
 			this.init_ab();
 		}
 		/**
 		 * inits ab variant table connection
 		 */
 		this.init_ab = function(){
+  		console.log("init_ab");
 			/**
 			 * upate table on socket event
 			 */
 			socket.on('update_ab_top_reports', function(data){
+  			console.log(data);
 				if(data.error){ //if no results found
 					$results_ab.empty();
 					$loading_ab.css("visibility", "hidden");
@@ -57,6 +59,7 @@
 					method: "POST",
 					data: {ids: content_ids},
 					success: function(_data){
+  					console.log("get_ab_info");
 						$results_ab.empty();
 						$loading_ab.css("visibility", "hidden");
 						var countListItems = 0;
@@ -70,11 +73,11 @@
 							$tr.append("<td><a href='/wp-admin/post.php?post="
 								+ob.content_id+"&action=edit'>"+result.title+
 								"</a></td>");
-							
+
 							//chose variant by highest conversion rate
 							var winner_variant_slug = 'standard';
 							var winner_variant_conversionrate = ob.conversion_rates.standard;
-							
+
 							//TODO show significance
 							if(ob.significance['95'] || ob.significance['99']){ //only give possibility to chose other than standard when is significantly better
 								for(var conversion_rate_slug in ob.conversion_rates){
@@ -82,9 +85,10 @@
 										winner_variant_slug = conversion_rate_slug;
 										winner_variant_conversionrate = ob.conversion_rates[conversion_rate_slug];
 									}
-								}	
+								}
 							}
-							$tr.append("<td>"+winner_variant_slug+"  <small>["+winner_variant_conversionrate+"%]</small></td>");
+							var info = winner_variant_slug+"  <small>["+winner_variant_conversionrate+"%]</small>";
+							$tr.append("<td>"+info+"</td>");
 							var $button = $button_template.clone();
 							$button.show();
 							var $td = $("<td></td>")
@@ -98,7 +102,7 @@
 						if(countListItems < 1){ //if no items added to list show errormessage
 							$results_ab.empty();
 							$loading_ab.css("visibility", "hidden");
-							$results_ab.append("Momentan keine Posts für die Auswertung verfügbar.");
+							$results_ab.append("<tr><td colspan='3'>Keine signifikanten Ergebnisse.</td></tr>");
 							return;
 						}
 					},
@@ -106,7 +110,7 @@
 						console.log([a,b,c]);
 					}
 				});
-				
+
 			});
 			this.get_ab_significant_contents();
 			/**
@@ -117,7 +121,7 @@
 				//TODO working?
 				var pid = $info.attr("data-pid");
 				var slug = $info.attr("data-slug");
-				console.log([$info,pid,slug]); 
+				console.log([$info,pid,slug]);
 				$.ajax({
 					url: ajaxurl+"?action=set_post_ab_variant",
 					dataType: "json",
@@ -136,18 +140,20 @@
 		}
 		var ab_timeout = null;
 		this.get_ab_significant_contents = function(){
+  		console.log("get_ab_significant_contents");
 			clearTimeout(ab_timeout);
 			ab_timeout = setTimeout(function(){
 				self.emit_get_ab_significant_contents();
 			}, 300)
 		}
 		this.emit_get_ab_significant_contents = function(){
+  		console.log("emit_get_ab_significant_contents");
 			$loading_ab.css("visibility", "visible");
 			if(!oc.admincore.is_ready){
 				this.get_ab_significant_contents();
 				return;
 			}
-			
+
 			// get all ids from posts that have no chosen variant
 			$.ajax({
 				url: ajaxurl+"?action=get_ab_posts_not_chosen",
@@ -203,7 +209,7 @@
 									titles_to_ids[cid].title = title;
 								} else {
 									titles_to_ids[cid].title = false;
-								}					
+								}
 							};
 						}
 						self.update_titles_ids();
@@ -256,7 +262,7 @@
 									titles_to_path[path] = data.result[i];
 								} else {
 									titles_to_path[path].title = false;
-								}					
+								}
 							};
 						}
 						self.update_titles_path();
@@ -273,7 +279,7 @@
 			$top_links.find("a").each(function(index, element){
 				var cid = element.getAttribute("data-content_id");
 				var path = element.getAttribute("href");
-				if(typeof titles_to_ids[cid] !== typeof undefined 
+				if(typeof titles_to_ids[cid] !== typeof undefined
 					&& titles_to_ids[cid] != null
 					&& typeof titles_to_ids[cid].title === typeof ""){
 					if(typeof titles_to_ids[cid].original === typeof undefined){
@@ -282,8 +288,8 @@
 					element.setAttribute("title", titles_to_ids[cid].original );
 					element.innerHTML = titles_to_ids[cid].title;
 					element.href = edit_post_link+cid;
-				} else if(typeof titles_to_path[path] !== typeof undefined 
-					&& titles_to_path[path] != null 
+				} else if(typeof titles_to_path[path] !== typeof undefined
+					&& titles_to_path[path] != null
 					&& titles_to_path[path].title !== false){
 					if(typeof titles_to_path[path].original === typeof undefined){
 						titles_to_path[path].original = element.innerHTML;
@@ -296,10 +302,10 @@
 				}
 			});
 		}
-		
+
 	}
 	octavius_admin.add_module(new OctaviusDashboard());
 
-	
+
 
 })(jQuery);
