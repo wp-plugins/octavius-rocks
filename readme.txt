@@ -1,10 +1,10 @@
 === Octavius Rocks ===
-Contributors: Octavius.rocks,edwardbock,benjamin.birkenhake,kroppenstedt,Pixelwelt
+Contributors: Octavius.rocks,edwardbock,benjamin.birkenhake,kroppenstedt
 Donate link: http://octavius.rocks/
 Tags: analytics, service, tracking, optimization
 Requires at least: 4.0
 Tested up to: 4.3
-Stable tag: 1.3.7
+Stable tag: 1.3.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,12 @@ Yes. You can get your beta key at www.octavius.rocks
 
 == Changelog ==
 
+= 1.3.9 =
+ * Fixed some errors in AB-Results Box.
+
+= 1.3.8 =
+ * Top Box replaces by Custom Report Box
+
 = 1.3.7 =
  * Short php code fix for larger compatibility
  * hide loading icon on dashboard widget if no items found
@@ -47,16 +53,16 @@ Yes. You can get your beta key at www.octavius.rocks
  * Enable or disable A/B Tests for post option
 
 = 1.3.3 =
- * Only logged out and abonnement users get tracked 
+ * Only logged out and abonnement users get tracked
 
-= 1.3.2 = 
+= 1.3.2 =
  * WP 4.3 tested
  * Variant result loaded to post object
  * ignore pageview variant if variant is selected
 
-= 1.3.1 = 
+= 1.3.1 =
  * AB results with variant names
- * AB dashboard widget 
+ * AB dashboard widget
  * AB variant decision selectable
 
 = 1.3.0 =

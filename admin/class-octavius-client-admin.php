@@ -42,14 +42,14 @@ class Octavius_Client_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->rendered_js_base = false;
-		
+
 	}
-	
+
 	/**
 	* Add Scripts for octavius
 	*/
 	public function add_admin_scripts(){
-		if ( is_user_logged_in() ) {	
+		if ( is_user_logged_in() ) {
 			wp_enqueue_script( 'octavius-socketio', plugin_dir_url( __FILE__ ) . 'js/socket.io-1.3.5.js', array(), '1.3.5', true );
 			wp_enqueue_script( 'octavius-admin-core', plugin_dir_url( __FILE__ ) . 'js/octavius-admin-core.js', array(), '1.0', true );
 		}
@@ -114,8 +114,8 @@ class Octavius_Client_Admin {
 		if($options != null){
 			return update_option('octavius_dashboard_widget_options', $options);
 		} else {
-			return array_merge( 
-					array("number" => 5, "ab_limit" => 100, "ab_type" => "pageview"), 
+			return array_merge(
+					array("number" => 5, "ab_limit" => 100, "ab_type" => "pageview"),
 					get_option('octavius_dashboard_widget_options', array() )
 				);
 		}
@@ -127,23 +127,21 @@ class Octavius_Client_Admin {
 
 		$api_key_id = "ph_octavius_api_key";
 		$server_id = "ph_octavius_server";
-		$port_id = "ph_octavius_port";
 
 		$api_key = get_option($api_key_id,'');
 		$server = get_option($server_id, '');
-		$port = get_option($port_id, '');
 
 		?>
 		<script type="text/javascript">
 		window.OctaviusInit = function(octavius){
-			octavius.config.service = "<?php echo $server; ?>:<?php echo $port; ?>";
+			octavius.config.service = "<?php echo $server; ?>";
 			octavius.api_key = "<?php echo $api_key; ?>";
 		};
 		(function(d){
 			var js, id = 'octavius-script', ref = d.getElementsByTagName('script')[0];
 			if (d.getElementById(id)) {return;}
 			js = d.createElement('script'); js.id = id; js.async = true;
-			js.src = "<?php echo $server; ?>:<?php echo $port; ?>/files/octavius.client.v1.0.js";
+			js.src = "<?php echo $server; ?>/files/octavius.client.v1.0.js";
 			ref.parentNode.insertBefore(js, ref);
 		}(document));
 		</script>
@@ -156,11 +154,12 @@ class Octavius_Client_Admin {
 
 		$options = $this->dashboardOptions();
 		$limit = $options["number"];
+		wp_enqueue_style( 'octavius-report-box-css', plugin_dir_url( __FILE__ ) . 'css/octavius-report-box-css.css', array(), '1.0', 'all' );
 		wp_enqueue_script( 'octavius-socketio', plugin_dir_url( __FILE__ ) . 'js/socket.io-1.3.5.js', array(), '1.3.5', true );
 		wp_enqueue_script( 'octavius-admin-core', plugin_dir_url( __FILE__ ) . 'js/octavius-admin-core.js', array(), '1.0', true );
-		wp_enqueue_script( 'octavius-admin-dashboard', plugin_dir_url( __FILE__ ) . 'js/octavius-dashboard.js', array(), '1.0', true );
+		wp_enqueue_script( 'octavius-admin-report-box', plugin_dir_url( __FILE__ ) . 'js/octavius-report-box.js', array(), '1.0', true );
 
-		include dirname(__FILE__)."/partials/octavius-dashboard-top-clicks.php";
+		include dirname(__FILE__)."/partials/octavius-dashboard-custom-report.php";
 
 	}
 	public function control_top_clicks(){
@@ -181,6 +180,8 @@ class Octavius_Client_Admin {
 		$options = $this->dashboardOptions();
 		$limit = $options["ab_limit"];
 		$type = $options["ab_type"];
+		wp_enqueue_script( 'octavius-admin-dashboard', plugin_dir_url( __FILE__ ) . 'js/octavius-dashboard.js', array(), '1.0', true );
+
 		include dirname(__FILE__)."/partials/octavius-dashboard-ab.php";
 
 	}
@@ -224,7 +225,7 @@ class Octavius_Client_Admin {
 		// Checks save status
 	    $is_autosave = wp_is_post_autosave( $post_id );
 	    $is_revision = wp_is_post_revision( $post_id );
-	 
+
 	    // Exits script depending on save status
 	    if ( $is_autosave || $is_revision ) {
 	        return;

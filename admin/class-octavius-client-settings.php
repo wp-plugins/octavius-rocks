@@ -61,7 +61,7 @@ class Octavius_Client_Settings {
 		// TODO tab for server settings
 		$api_key_id = "ph_octavius_api_key";
 		$server_id = "ph_octavius_server";
-		
+
 		if( isset($_POST[$api_key_id]) && isset($_POST[$server_id]) ){
 			update_option($api_key_id, sanitize_text_field($_POST[$api_key_id]) );
 			update_option($server_id, sanitize_text_field($_POST[$server_id]) );

@@ -24,7 +24,6 @@ class Octavius_Client_Public {
 
 	private $api_key;
 	private $server;
-	private $port;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -39,11 +38,9 @@ class Octavius_Client_Public {
 		 */
 		$api_key_id = "ph_octavius_api_key";
 		$server_id = "ph_octavius_server";
-		$port_id = "ph_octavius_port";
 
 		$this->api_key = get_option($api_key_id,'');
 		$this->server = get_option($server_id, '');
-		$this->port = get_option($port_id, '');
 	}
 
 	/**
@@ -59,13 +56,13 @@ class Octavius_Client_Public {
 		?>
 		<script type="text/javascript">
 		window.OctaviusInit = function(octavius){
-			octavius.config.service = "<?php echo $this->server; ?>:<?php echo $this->port; ?>";
+			octavius.config.service = "<?php echo $this->server; ?>";
 			octavius.api_key = "<?php echo $this->api_key; ?>";
 		};
 		</script>
 		<?php
 
-		
+
 		$user = wp_get_current_user();
 		if ( !in_array( 'author', (array) $user->roles )
 		&& !in_array( 'contributor', (array) $user->roles )
@@ -73,7 +70,7 @@ class Octavius_Client_Public {
 		&& !in_array( 'administrator', (array) $user->roles ) ) {
 			/**
 			 * track if users are abonnements or neutral
-			 */	
+			 */
 		    $this->render_tracking_script();
 		} else {
 			/**
@@ -95,12 +92,12 @@ class Octavius_Client_Public {
 		 */
 		?>
 		<script type="text/javascript">
-		
+
 		(function(d){
 			var js, id = 'octavius-script', ref = d.getElementsByTagName('script')[0];
 			if (d.getElementById(id)) {return;}
 			js = d.createElement('script'); js.id = id; js.async = true;
-			js.src = "<?php echo $this->server; ?>:<?php echo $this->port; ?>/files/octavius.client.v1.0.js";
+			js.src = "<?php echo $this->server; ?>/files/octavius.client.v1.0.js";
 			ref.parentNode.insertBefore(js, ref);
 		}(document));
 		</script>
@@ -135,10 +132,10 @@ class Octavius_Client_Public {
 			$pid = $this->get_content_id();
 		}
 
-		$service_url = $this->server.":".$this->port."/hit/oc-found/".$this->api_key."?url=".$url;
+		$service_url = $this->server."/hit/oc-found/".$this->api_key."?url=".$url;
 		$service_url.= "&content_id=".$pid;
 		$service_url.= "&pagetype=".$type;
-		$service_url.= "&content_type=".$type;	
+		$service_url.= "&content_type=".$type;
 
 		/**
 		 * look for variant tracking
@@ -159,14 +156,14 @@ class Octavius_Client_Public {
 				}
 			}
 		}
-		
+
 		/**
 		 * last step is referer data, so if the pixel url gets too long this gets cut out
 		 */
 		if(isset($_SERVER['HTTP_REFERER'])){
 			$service_url.= "&referer_domain=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);
 			$service_url.= "&referer_path=".parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
-		}	
+		}
 		?>
 		<img id="octavius-needed-pixel" src="<?php echo $service_url; ?>" />
 		<script type="text/javascript">

@@ -1,0 +1,27 @@
+.oc-report-filter{
+	border: 1px solid #e5e5e5;
+	padding: 10px;
+	margin-bottom: 10px;
+    overflow: auto;
+}
+.oc-report-filter-label {
+    width: 80px;
+    float: left;
+    clear: both;
+    margin: 9px 0px;
+    font-weight: bold;
+}
+.oc-report-filter-input{
+	margin: 5px 0 10px 0;
+    display: block;
+    float: left;
+}
+.button.oc-report-filter-input{
+	margin: 20px 0;
+}
+#oc-result-table{
+	display: none;
+}
+#oc-report-filter-send {
+    clear: both;
+}
