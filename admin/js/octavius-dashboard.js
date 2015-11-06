@@ -29,12 +29,10 @@
 		 * inits ab variant table connection
 		 */
 		this.init_ab = function(){
-  		console.log("init_ab");
 			/**
 			 * upate table on socket event
 			 */
 			socket.on('update_ab_top_reports', function(data){
-  			console.log(data);
 				if(data.error){ //if no results found
 					$results_ab.empty();
 					$loading_ab.css("visibility", "hidden");
@@ -59,7 +57,6 @@
 					method: "POST",
 					data: {ids: content_ids},
 					success: function(_data){
-  					console.log("get_ab_info");
 						$results_ab.empty();
 						$loading_ab.css("visibility", "hidden");
 						var countListItems = 0;
@@ -140,14 +137,12 @@
 		}
 		var ab_timeout = null;
 		this.get_ab_significant_contents = function(){
-  		console.log("get_ab_significant_contents");
 			clearTimeout(ab_timeout);
 			ab_timeout = setTimeout(function(){
 				self.emit_get_ab_significant_contents();
 			}, 300)
 		}
 		this.emit_get_ab_significant_contents = function(){
-  		console.log("emit_get_ab_significant_contents");
 			$loading_ab.css("visibility", "visible");
 			if(!oc.admincore.is_ready){
 				this.get_ab_significant_contents();
