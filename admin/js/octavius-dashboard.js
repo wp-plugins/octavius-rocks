@@ -1,3 +1,4 @@
+//TODO clean up top contents functionality
 (function( $ ) {
 	'use strict';
 
@@ -9,39 +10,31 @@
 		var $type_ab = $("#octavius-rocks-ab-type");
 		var $loading_ab = $("#octavius-loading-ab");
 		var $results_ab = $("#octavius-ab-results");
-		var $button_template = $("#octavius-rocks-ab-button-template");
+		var $button_template = $("#octavius-rocks-ab-button-template").attr('style', '');
 		$button_template.hide();
-		/**
-		 * top contents
-		 */
-		var $top_links = $("#octavius-top-links");
-		var $loading = $("#octavius-loading");
-		var $step = $("#octavius-top-links-step");
-		var $timestamp = $('#octavius-timestamp');
-		var $limit = $('#octavius-limit');
-		var edit_post_link = $("#edit-post-link-template").val();
 
 		var self = this;
 		var socket = null;
 		var oc = null;
-		
-		var theDate = new Date('09-10-2015');//daten when rendered was tracked on zett
-		
+
+		var theDate = new Date('09-10-2015');//daten when rendered was tracked on zett TODO
+
 		this.init = function(octavius){
 			oc = octavius;
 			socket = octavius.socket;
-			
-			this.init_top();
+
 			this.init_ab();
 		}
 		/**
 		 * inits ab variant table connection
 		 */
 		this.init_ab = function(){
+  		console.log("init_ab");
 			/**
 			 * upate table on socket event
 			 */
 			socket.on('update_ab_top_reports', function(data){
+  			console.log(data);
 				if(data.error){ //if no results found
 					$results_ab.empty();
 					$loading_ab.css("visibility", "hidden");
@@ -66,6 +59,7 @@
 					method: "POST",
 					data: {ids: content_ids},
 					success: function(_data){
+  					console.log("get_ab_info");
 						$results_ab.empty();
 						$loading_ab.css("visibility", "hidden");
 						var countListItems = 0;
@@ -79,11 +73,11 @@
 							$tr.append("<td><a href='/wp-admin/post.php?post="
 								+ob.content_id+"&action=edit'>"+result.title+
 								"</a></td>");
-							
+
 							//chose variant by highest conversion rate
 							var winner_variant_slug = 'standard';
 							var winner_variant_conversionrate = ob.conversion_rates.standard;
-							
+
 							//TODO show significance
 							if(ob.significance['95'] || ob.significance['99']){ //only give possibility to chose other than standard when is significantly better
 								for(var conversion_rate_slug in ob.conversion_rates){
@@ -91,9 +85,10 @@
 										winner_variant_slug = conversion_rate_slug;
 										winner_variant_conversionrate = ob.conversion_rates[conversion_rate_slug];
 									}
-								}	
+								}
 							}
-							$tr.append("<td>"+winner_variant_slug+"  <small>["+winner_variant_conversionrate+"%]</small></td>");
+							var info = winner_variant_slug+"  <small>["+winner_variant_conversionrate+"%]</small>";
+							$tr.append("<td>"+info+"</td>");
 							var $button = $button_template.clone();
 							$button.show();
 							var $td = $("<td></td>")
@@ -107,7 +102,7 @@
 						if(countListItems < 1){ //if no items added to list show errormessage
 							$results_ab.empty();
 							$loading_ab.css("visibility", "hidden");
-							$results_ab.append("Momentan keine Posts für die Auswertung verfügbar.");
+							$results_ab.append("<tr><td colspan='3'>Keine signifikanten Ergebnisse.</td></tr>");
 							return;
 						}
 					},
@@ -115,7 +110,7 @@
 						console.log([a,b,c]);
 					}
 				});
-				
+
 			});
 			this.get_ab_significant_contents();
 			/**
@@ -126,7 +121,7 @@
 				//TODO working?
 				var pid = $info.attr("data-pid");
 				var slug = $info.attr("data-slug");
-				console.log([$info,pid,slug]); 
+				console.log([$info,pid,slug]);
 				$.ajax({
 					url: ajaxurl+"?action=set_post_ab_variant",
 					dataType: "json",
@@ -145,18 +140,20 @@
 		}
 		var ab_timeout = null;
 		this.get_ab_significant_contents = function(){
+  		console.log("get_ab_significant_contents");
 			clearTimeout(ab_timeout);
 			ab_timeout = setTimeout(function(){
 				self.emit_get_ab_significant_contents();
 			}, 300)
 		}
 		this.emit_get_ab_significant_contents = function(){
+  		console.log("emit_get_ab_significant_contents");
 			$loading_ab.css("visibility", "visible");
 			if(!oc.admincore.is_ready){
 				this.get_ab_significant_contents();
 				return;
 			}
-			
+
 			// get all ids from posts that have no chosen variant
 			$.ajax({
 				url: ajaxurl+"?action=get_ab_posts_not_chosen",
@@ -168,79 +165,6 @@
 					console.log([a,b,c]);
 				}
 			});
-		}
-		/**
-		 * inits all for top content connection
-		 */
-		this.init_top = function(){
-			/**
-			 * top posts table socket event
-			 */
-			socket.on('update_top', function(data){
-				$top_links.empty();
-
-				for(var i = 0; i < data.result.length; i++){
-					var _item = data.result[i];
-					if( !isNaN(_item.content_id) && _item.content_id != "" && typeof titles_to_ids[_item.content_id] == typeof undefined ){
-						titles_to_ids[_item.content_id] = null;
-					} else if( typeof titles_to_path[_item.content_url] == typeof undefined ) {
-						titles_to_path[_item.content_url] = null;
-					}
-					$top_links.append('<tr>'+
-						'<td><a data-content_url="'+_item.content_url+'"" data-content_id="'+_item.content_id+'" '
-						+'href="'+_item.content_url+'">'+_item.content_url+'</a></td>'+
-						'<td>'+_item.hits+'</td>'+
-					'</tr>');
-					var stamp = _item.timestamp;
-				}
-
-
-				$loading.css("visibility", "hidden");
-
-				if(data.step != "live"){
-					var date = new Date(stamp);
-				} else {
-					var date = new Date();
-					if($step.val() == "live"){
-						self.get_top();
-					}
-				}
-
-				self.display_titles();
-				
-				var date_string = date.getFullYear()+"/"+(date.getMonth()+1)+"/"+date.getDate();
-				var time_string = date.getHours()+":"
-								+((date.getMinutes() < 10)? "0"+date.getMinutes():date.getMinutes())
-								+":"+((date.getSeconds() < 10)? "0"+date.getSeconds():date.getSeconds());
-				$timestamp.text( date_string+" "+time_string );
-				
-			});
-			/**
-			 * on change listener for top posts
-			 */
-			$step.on("change", function(){
-				$top_links.empty();
-				self.emit_get_top();
-			});
-			this.emit_get_top();
-
-		}
-		var top_timeout = null;
-		this.get_top = function(){
-			clearTimeout(top_timeout);
-			top_timeout = setTimeout(function(){
-				self.emit_get_top();
-			},5000);
-		}
-		var emit_get_top_timeout = null;
-		this.emit_get_top = function(){
-			$loading.css("visibility", "visible");
-			if(!oc.admincore.is_ready){
-				clearTimeout(emit_get_top_timeout);
-				emit_get_top_timeout = setTimeout(function(){ self.emit_get_top(); }, 300);
-				return;
-			}
-			socket.emit("get_top",{step: $step.val(), limit: $limit.val() });
 		}
 		/**
 		 * fetches new post titles if there are new ones
@@ -285,7 +209,7 @@
 									titles_to_ids[cid].title = title;
 								} else {
 									titles_to_ids[cid].title = false;
-								}					
+								}
 							};
 						}
 						self.update_titles_ids();
@@ -338,7 +262,7 @@
 									titles_to_path[path] = data.result[i];
 								} else {
 									titles_to_path[path].title = false;
-								}					
+								}
 							};
 						}
 						self.update_titles_path();
@@ -355,7 +279,7 @@
 			$top_links.find("a").each(function(index, element){
 				var cid = element.getAttribute("data-content_id");
 				var path = element.getAttribute("href");
-				if(typeof titles_to_ids[cid] !== typeof undefined 
+				if(typeof titles_to_ids[cid] !== typeof undefined
 					&& titles_to_ids[cid] != null
 					&& typeof titles_to_ids[cid].title === typeof ""){
 					if(typeof titles_to_ids[cid].original === typeof undefined){
@@ -364,8 +288,8 @@
 					element.setAttribute("title", titles_to_ids[cid].original );
 					element.innerHTML = titles_to_ids[cid].title;
 					element.href = edit_post_link+cid;
-				} else if(typeof titles_to_path[path] !== typeof undefined 
-					&& titles_to_path[path] != null 
+				} else if(typeof titles_to_path[path] !== typeof undefined
+					&& titles_to_path[path] != null
 					&& titles_to_path[path].title !== false){
 					if(typeof titles_to_path[path].original === typeof undefined){
 						titles_to_path[path].original = element.innerHTML;
@@ -378,10 +302,10 @@
 				}
 			});
 		}
-		
+
 	}
 	octavius_admin.add_module(new OctaviusDashboard());
 
-	
+
 
 })(jQuery);
