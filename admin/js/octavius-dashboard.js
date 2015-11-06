@@ -1,3 +1,4 @@
+//TODO clean up top contents functionality
 (function( $ ) {
 	'use strict';
 
@@ -11,27 +12,17 @@
 		var $results_ab = $("#octavius-ab-results");
 		var $button_template = $("#octavius-rocks-ab-button-template");
 		$button_template.hide();
-		/**
-		 * top contents
-		 */
-		var $top_links = $("#octavius-top-links");
-		var $loading = $("#octavius-loading");
-		var $step = $("#octavius-top-links-step");
-		var $timestamp = $('#octavius-timestamp');
-		var $limit = $('#octavius-limit');
-		var edit_post_link = $("#edit-post-link-template").val();
 
 		var self = this;
 		var socket = null;
 		var oc = null;
 		
-		var theDate = new Date('09-10-2015');//daten when rendered was tracked on zett
+		var theDate = new Date('09-10-2015');//daten when rendered was tracked on zett TODO
 		
 		this.init = function(octavius){
 			oc = octavius;
 			socket = octavius.socket;
 			
-			this.init_top();
 			this.init_ab();
 		}
 		/**
@@ -168,79 +159,6 @@
 					console.log([a,b,c]);
 				}
 			});
-		}
-		/**
-		 * inits all for top content connection
-		 */
-		this.init_top = function(){
-			/**
-			 * top posts table socket event
-			 */
-			socket.on('update_top', function(data){
-				$top_links.empty();
-
-				for(var i = 0; i < data.result.length; i++){
-					var _item = data.result[i];
-					if( !isNaN(_item.content_id) && _item.content_id != "" && typeof titles_to_ids[_item.content_id] == typeof undefined ){
-						titles_to_ids[_item.content_id] = null;
-					} else if( typeof titles_to_path[_item.content_url] == typeof undefined ) {
-						titles_to_path[_item.content_url] = null;
-					}
-					$top_links.append('<tr>'+
-						'<td><a data-content_url="'+_item.content_url+'"" data-content_id="'+_item.content_id+'" '
-						+'href="'+_item.content_url+'">'+_item.content_url+'</a></td>'+
-						'<td>'+_item.hits+'</td>'+
-					'</tr>');
-					var stamp = _item.timestamp;
-				}
-
-
-				$loading.css("visibility", "hidden");
-
-				if(data.step != "live"){
-					var date = new Date(stamp);
-				} else {
-					var date = new Date();
-					if($step.val() == "live"){
-						self.get_top();
-					}
-				}
-
-				self.display_titles();
-				
-				var date_string = date.getFullYear()+"/"+(date.getMonth()+1)+"/"+date.getDate();
-				var time_string = date.getHours()+":"
-								+((date.getMinutes() < 10)? "0"+date.getMinutes():date.getMinutes())
-								+":"+((date.getSeconds() < 10)? "0"+date.getSeconds():date.getSeconds());
-				$timestamp.text( date_string+" "+time_string );
-				
-			});
-			/**
-			 * on change listener for top posts
-			 */
-			$step.on("change", function(){
-				$top_links.empty();
-				self.emit_get_top();
-			});
-			this.emit_get_top();
-
-		}
-		var top_timeout = null;
-		this.get_top = function(){
-			clearTimeout(top_timeout);
-			top_timeout = setTimeout(function(){
-				self.emit_get_top();
-			},5000);
-		}
-		var emit_get_top_timeout = null;
-		this.emit_get_top = function(){
-			$loading.css("visibility", "visible");
-			if(!oc.admincore.is_ready){
-				clearTimeout(emit_get_top_timeout);
-				emit_get_top_timeout = setTimeout(function(){ self.emit_get_top(); }, 300);
-				return;
-			}
-			socket.emit("get_top",{step: $step.val(), limit: $limit.val() });
 		}
 		/**
 		 * fetches new post titles if there are new ones
